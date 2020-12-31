@@ -1,11 +1,14 @@
+
 #!/usr/bin/env python2
 
 import rospy
 import xml.etree.ElementTree as ET
 import numpy as np
+import math
 
 from geometry_msgs.msg import PoseStamped
-from piendltest.msg import obstacleMsg, obstacleListMsg
+from path_planning_private.msg import obstacleMsg, obstacleListMsg
+from scipy.spatial.transform import Rotation as R
 
 
 class Obstacle:
@@ -53,6 +56,7 @@ class ObstacleSensor(object):
         self.active_obstacles = list()
         self.uav_pose = None
         self.range = 20
+        self.angle = 45                 # Added angle to only include obstacles within field of view
 
         rospy.Subscriber('/mavros/local_position/pose', PoseStamped, self.poseCallback)
         self.pub_obstacle_list = rospy.Publisher("~/active_obstacles", obstacleListMsg, queue_size=100)
@@ -68,10 +72,33 @@ class ObstacleSensor(object):
 
         return np.linalg.norm((uav_pos, obs_pos))
 
+    # New function to identify angle between obstacle and drone"
+    def get_angle_uav_obstacles(self, obstacle):
+        assert(isinstance(obstacle, Obstacle))
+        sp = np.array[1, 0, 0]                              # starting position from UAV
+        uav_quat = np.array([self.uav_pose.pose.orientation.x, self.uav_pose.pose.orientation.y,
+                             self.uav_pose.pose.orientation.z, self.uav_pose.pose.orientation.w])
+        rot_matrix = R.from_quat(uav_quat)                  # calculates UAV rotation matrix
+        cu_dv = rot_matrix.dot(sp)                          # calculates current direction vector of UAV
+        # Build vector between vector and current obstacle
+        uav_pos = np.array([self.uav_pose.pose.position.x, self.uav_pose.pose.position.y,
+                            self.uav_pose.pose.position.z])
+        obs_pos = np.array(obstacle.pose[:3])
+        dist_vector = np.subtract(uav_pos, obs_pos)
+        # Calculate angle between two vectors
+        dist_vector = dist_vector / np.linalg.norm(dist_vector)
+        cu_dv = cu_dv / np.linalg.norm(cu_dv)
+        angle_uav_obs = np.arccos(np.clip(np.dot(dist_vector, cu_dv), -1.0, 1.0))
+        angle_uav_obs = abs(math.degrees(angle_uav_obs))    # turn angle from radians to degrees and give absolute value
+
+        return angle_uav_obs
+
+    # Added another condition to check if obstacle is within field of view of sensor
     def get_active_obstacles(self):
         msg = obstacleListMsg()
         for obstacle_i in self.all_obstacles:
-            if self.get_distance_uav_obstacle(obstacle_i) <= self.range:
+            if self.get_distance_uav_obstacle(obstacle_i) <= self.range and \
+                    self.get_angle_uav_obstacles(obstacle_i) <= self.angle:
                 obs = obstacleMsg()
                 obs.name = obstacle_i.name
                 obs.typeOfObstacle = obstacle_i.typeOfObstacle
@@ -84,7 +111,7 @@ class ObstacleSensor(object):
         self.pub_obstacle_list.publish(msg)
 
     def start(self):
-        filename = '/home/daniel/OneDrive/APF - Erste Implementierung/gazebo_xml_test'  # ToDo: Make Param
+        filename = '../gazebo_xml_test'  # ToDo: Make Param
 
         rospy.loginfo("Obstacle Sensor initialized")
 
