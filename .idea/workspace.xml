@@ -1,14 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="2b69f1ab-9d54-4496-8af0-1eef0c768d44" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/nodes/obstacle_map_node" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/py_uav_path_planning/obstacle_map/obstacle_map.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/scripts/SensorModule.py" beforeDir="false" afterPath="$PROJECT_DIR$/nodes/obstacle_sensor_node" afterDir="false" />
-    </list>
-    <list id="56129878-e329-44c7-8054-745bd1d46105" name="Example Folder" comment="Created Example folder for the gazebo worlds and other stuff ">
-      <change beforePath="$PROJECT_DIR$/gazebo_xml_test" beforeDir="false" afterPath="$PROJECT_DIR$/examples/gazebo_worlds/gazebo_BoxAndCylinder.xml" afterDir="false" />
-    </list>
+    <list default="true" id="2b69f1ab-9d54-4496-8af0-1eef0c768d44" name="Default Changelist" comment="moved python code into a package, created subpackages" />
+    <list id="56129878-e329-44c7-8054-745bd1d46105" name="Example Folder" comment="Created Example folder for the gazebo worlds and other stuff " />
+    <list id="b71ee3ab-dd20-4e73-a8c1-7d0e4b813f8c" name="New folder Node" comment="Put all node files in here that are called with &quot;rosrun path_planning_private node123&quot;" />
     <list id="00b5d67a-2643-4fb0-9eb5-5ebf3465e4e2" name="New Project Structure" comment="">
       <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
@@ -21,7 +16,9 @@
       <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/package.xml" beforeDir="false" afterPath="$PROJECT_DIR$/package.xml" afterDir="false" />
     </list>
-    <list id="b246031e-dfd0-4291-838e-66c6dc4ede2d" name="New subpackage obstacle_map" comment="Put everything that has to do with the obstacle map in here" />
+    <list id="b246031e-dfd0-4291-838e-66c6dc4ede2d" name="New subpackage obstacle_map" comment="Put everything that has to do with the obstacle map in here">
+      <change afterPath="$PROJECT_DIR$/src/py_uav_path_planning/obstacle_map/obstacle_map.py" afterDir="false" />
+    </list>
     <list id="40f9f2f9-153f-463a-974b-8aae2d176fa6" name="New subpackage obstacle_sensor" comment="Put everything that has to do with obstacle_sensor in here">
       <change afterPath="$PROJECT_DIR$/src/py_uav_path_planning/obstacle_sensor/helper/obstacle.py" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/src/py_uav_path_planning/obstacle_sensor/helper/read_gazebo_xml.py" afterDir="false" />
@@ -103,6 +100,7 @@
       <changelist id="56129878-e329-44c7-8054-745bd1d46105" name="Example Folder" comment="Created Example folder for the gazebo worlds and other stuff " />
       <changelist id="40f9f2f9-153f-463a-974b-8aae2d176fa6" name="New subpackage obstacle_sensor" comment="Put everything that has to do with obstacle_sensor in here" />
       <changelist id="b246031e-dfd0-4291-838e-66c6dc4ede2d" name="New subpackage obstacle_map" comment="Put everything that has to do with the obstacle map in here" />
+      <changelist id="b71ee3ab-dd20-4e73-a8c1-7d0e4b813f8c" name="New folder Node" comment="Put all node files in here that are called with &quot;rosrun path_planning_private node123&quot;" />
       <created>1609347591544</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
@@ -114,8 +112,30 @@
       <workItem from="1609512729602" duration="5011000" />
       <workItem from="1609517757578" duration="180000" />
       <workItem from="1609517952656" duration="4660000" />
-      <workItem from="1609542118024" duration="637000" />
+      <workItem from="1609542118024" duration="947000" />
     </task>
+    <task id="LOCAL-00001" summary="Created example folder">
+      <created>1609542928670</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1609542928670</updated>
+    </task>
+    <task id="LOCAL-00002" summary="Created folder for nodes">
+      <created>1609542960860</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1609542960860</updated>
+    </task>
+    <task id="LOCAL-00003" summary="moved python code into a package, created subpackages">
+      <created>1609543059935</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1609543059935</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -132,5 +152,12 @@
       </map>
     </option>
     <option name="oldMeFiltersMigrated" value="true" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Updated project structure, updated obstacle sensor package, created obstacle map package" />
+    <MESSAGE value="Created example folder" />
+    <MESSAGE value="Created folder for nodes" />
+    <MESSAGE value="moved python code into a package, created subpackages" />
+    <option name="LAST_COMMIT_MESSAGE" value="moved python code into a package, created subpackages" />
   </component>
 </project>
