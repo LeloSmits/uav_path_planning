@@ -1,16 +1,59 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="2b69f1ab-9d54-4496-8af0-1eef0c768d44" name="Default Changelist" comment="" />
+    <list default="true" id="2b69f1ab-9d54-4496-8af0-1eef0c768d44" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/nodes/obstacle_map_node" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/py_uav_path_planning/obstacle_map/obstacle_map.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/SensorModule.py" beforeDir="false" afterPath="$PROJECT_DIR$/nodes/obstacle_sensor_node" afterDir="false" />
+    </list>
+    <list id="56129878-e329-44c7-8054-745bd1d46105" name="Example Folder" comment="Created Example folder for the gazebo worlds and other stuff ">
+      <change beforePath="$PROJECT_DIR$/gazebo_xml_test" beforeDir="false" afterPath="$PROJECT_DIR$/examples/gazebo_worlds/gazebo_BoxAndCylinder.xml" afterDir="false" />
+    </list>
+    <list id="00b5d67a-2643-4fb0-9eb5-5ebf3465e4e2" name="New Project Structure" comment="">
+      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/setup.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/py_uav_path_planning/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/py_uav_path_planning/obstacle_map/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/py_uav_path_planning/obstacle_sensor/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/py_uav_path_planning/obstacle_sensor/helper/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.xml" beforeDir="false" afterPath="$PROJECT_DIR$/package.xml" afterDir="false" />
+    </list>
+    <list id="b246031e-dfd0-4291-838e-66c6dc4ede2d" name="New subpackage obstacle_map" comment="Put everything that has to do with the obstacle map in here" />
+    <list id="40f9f2f9-153f-463a-974b-8aae2d176fa6" name="New subpackage obstacle_sensor" comment="Put everything that has to do with obstacle_sensor in here">
+      <change afterPath="$PROJECT_DIR$/src/py_uav_path_planning/obstacle_sensor/helper/obstacle.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/py_uav_path_planning/obstacle_sensor/helper/read_gazebo_xml.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/py_uav_path_planning/obstacle_sensor/obstacle_sensor.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="GitSEFilterConfiguration">
+    <file-type-list>
+      <filtered-out-file-type name="LOCAL_BRANCH" />
+      <filtered-out-file-type name="REMOTE_BRANCH" />
+      <filtered-out-file-type name="TAG" />
+      <filtered-out-file-type name="COMMIT_BY_MESSAGE" />
+    </file-type-list>
+  </component>
   <component name="ProjectId" id="1mNwvxjrLoZ9N8B0OWluN7VP8Z1" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
@@ -19,21 +62,75 @@
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="settings.editor.selected.configurable" value="project.propVCSSupport.Mappings" />
+  </component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/examples/gazebo_worlds" />
+      <recent name="$PROJECT_DIR$/nodes" />
+    </key>
+  </component>
+  <component name="RunManager">
+    <configuration default="true" type="PythonConfigurationType" factoryName="Python">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="true" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
       <changelist id="2b69f1ab-9d54-4496-8af0-1eef0c768d44" name="Default Changelist" comment="" />
+      <changelist id="00b5d67a-2643-4fb0-9eb5-5ebf3465e4e2" name="New Project Structure" comment="" />
+      <changelist id="56129878-e329-44c7-8054-745bd1d46105" name="Example Folder" comment="Created Example folder for the gazebo worlds and other stuff " />
+      <changelist id="40f9f2f9-153f-463a-974b-8aae2d176fa6" name="New subpackage obstacle_sensor" comment="Put everything that has to do with obstacle_sensor in here" />
+      <changelist id="b246031e-dfd0-4291-838e-66c6dc4ede2d" name="New subpackage obstacle_map" comment="Put everything that has to do with the obstacle map in here" />
       <created>1609347591544</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1609347591544</updated>
       <workItem from="1609347592719" duration="198000" />
+      <workItem from="1609406177979" duration="1003000" />
+      <workItem from="1609409228907" duration="116000" />
+      <workItem from="1609409429605" duration="1221000" />
+      <workItem from="1609512729602" duration="5011000" />
+      <workItem from="1609517757578" duration="180000" />
+      <workItem from="1609517952656" duration="4660000" />
+      <workItem from="1609542118024" duration="637000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="oldMeFiltersMigrated" value="true" />
   </component>
 </project>

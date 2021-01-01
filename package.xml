@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>piendltest</name>
+  <name>uav_path_planning</name>
   <version>0.0.0</version>
-  <description>The piendltest package</description>
+  <description>Local path planning utilities for UAV operation</description>
 
   <!-- One maintainer tag required, multiple allowed, one person per tag -->
   <!-- Example:  -->

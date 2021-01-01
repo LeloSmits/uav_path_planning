@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0.2)
-project(piendltest)
+project(uav_path_planning)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
 # add_compile_options(-std=c++11)
@@ -16,7 +16,7 @@ find_package(catkin REQUIRED COMPONENTS roscpp geometry_msgs mavros_msgs octomap
 ## Uncomment this if the package has a setup.py. This macro ensures
 ## modules and global scripts declared therein get installed
 ## See http://ros.org/doc/api/catkin/html/user_guide/setup_dot_py.html
-# catkin_python_setup()
+catkin_python_setup()
 
 ################################################
 ## Declare ROS messages, services and actions ##
@@ -122,7 +122,7 @@ include_directories(include ${catkin_INCLUDE_DIRS})
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
 # add_executable(${PROJECT_NAME}_node src/piendltest_node.cpp)
-add_executable(offb_node offb_node.cpp)
+# add_executable(offb_node offb_node.cpp)
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
 ## target back to the shorter version for ease of user use
@@ -134,7 +134,7 @@ add_executable(offb_node offb_node.cpp)
 # add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
-target_link_libraries(offb_node ${catkin_LIBRARIES})
+# target_link_libraries(offb_node ${catkin_LIBRARIES})
 
 #############
 ## Install ##
@@ -150,7 +150,7 @@ target_link_libraries(offb_node ${catkin_LIBRARIES})
 #   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 # )
 
-catkin_install_python(PROGRAMS scripts/talker.py scripts/SensorModule.py DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
+# catkin_install_python(PROGRAMS scripts/SensorModule.py DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
 
 ## Mark executables for installation
 ## See http://docs.ros.org/melodic/api/catkin/html/howto/format1/building_executables.html
@@ -179,6 +179,12 @@ catkin_install_python(PROGRAMS scripts/talker.py scripts/SensorModule.py DESTINA
 #   # myfile2
 #   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
 # )
+
+install(
+    PROGRAMS
+    nodes/sensor_module
+    DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+    )
 
 #############
 ## Testing ##
