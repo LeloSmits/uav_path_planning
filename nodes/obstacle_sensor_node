@@ -1,0 +1,13 @@
+#!/usr/bin/env python2
+
+import rospy
+import sys
+from py_uav_path_planning import ObstacleSensor
+
+
+if __name__ == '__main__':
+    if len(sys.argv) < 2 or len(sys.argv) > 4:
+        rospy.logerr("obstacle_sensor node not started. Usage is: /path/to/gazebo_world.xml")
+    else:
+        node = ObstacleSensor()
+        node.start(sys.argv[1])
