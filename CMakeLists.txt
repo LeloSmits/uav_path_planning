@@ -122,7 +122,7 @@ include_directories(include ${catkin_INCLUDE_DIRS})
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
 # add_executable(${PROJECT_NAME}_node src/piendltest_node.cpp)
-# add_executable(offb_node offb_node.cpp)
+#add_executable(offb_node offb_node.cpp)
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
 ## target back to the shorter version for ease of user use
@@ -134,7 +134,7 @@ include_directories(include ${catkin_INCLUDE_DIRS})
 # add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
-# target_link_libraries(offb_node ${catkin_LIBRARIES})
+#target_link_libraries(offb_node ${catkin_LIBRARIES})
 
 #############
 ## Install ##
@@ -150,7 +150,7 @@ include_directories(include ${catkin_INCLUDE_DIRS})
 #   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 # )
 
-# catkin_install_python(PROGRAMS scripts/SensorModule.py DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
+# catkin_install_python(PROGRAMS scripts/talker.py scripts/SensorModule.py DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
 
 ## Mark executables for installation
 ## See http://docs.ros.org/melodic/api/catkin/html/howto/format1/building_executables.html

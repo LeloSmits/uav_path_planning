@@ -45,7 +45,7 @@ class ObstacleSensor(object):
     # New function to identify angle between obstacle and drone"
     def get_angle_uav_obstacles(self, obstacle):
         # ToDo @Leo
-        return 0
+        # return 0
         assert isinstance(obstacle, Obstacle)
         sp = np.array([1, 0, 0])  # vector of the sensor in the UAV coordinate frame
         uav_quat = np.array([self.uav_pose.pose.orientation.x, self.uav_pose.pose.orientation.y,
@@ -62,6 +62,7 @@ class ObstacleSensor(object):
         cu_dv = cu_dv / np.linalg.norm(cu_dv)
         angle_uav_obs = np.arccos(np.clip(np.dot(dist_vector, cu_dv), -1.0, 1.0))
         angle_uav_obs = abs(math.degrees(angle_uav_obs))  # turn angle from radians to degrees and give absolute value
+        print(angle_uav_obs)
         return angle_uav_obs
 
     def _get_all_obstacles(self, filepath):
