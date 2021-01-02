@@ -1,2 +1,7 @@
 #!/usr/bin/env python2
 
+from py_uav_path_planning import ObstacleMap
+
+if __name__ == '__main__':
+    node = ObstacleMap()
+    node.start()

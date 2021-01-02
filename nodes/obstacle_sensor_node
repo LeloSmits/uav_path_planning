@@ -1,6 +1,5 @@
 #!/usr/bin/env python2
 
-import rospy
 import sys
 from py_uav_path_planning import ObstacleSensor
 

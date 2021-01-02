@@ -182,7 +182,7 @@ include_directories(include ${catkin_INCLUDE_DIRS})
 
 install(
     PROGRAMS
-    nodes/sensor_module
+    nodes/sensor_module nodes/obstacle_map_node
     DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
     )
 

@@ -9,7 +9,7 @@ from geometry_msgs.msg import PoseStamped
 from uav_path_planning.msg import obstacleMsg, obstacleListMsg
 
 
-class ObstacleSensor(object):
+class ObstacleMap(object):
     def __init__(self):
         self.name = 'obstacle_map'
         rospy.init_node(self.name)
@@ -35,6 +35,7 @@ class ObstacleSensor(object):
         return
 
     def _pose_callback(self, data):
+        # type: (PoseStamped) -> None
         """Callback function for the subscription to /mavros/local_position/pose."""
         self.uav_pose = data
         return
@@ -43,12 +44,12 @@ class ObstacleSensor(object):
         """Publisher Function that publishes self.active_obstacles in the ObstacleListMsg format
         to ~/active_obstacles."""
         # ToDo:
-        # msg = obstacleListMsg()
-        # for obstacle_i in self.active_obstacles:
-        #     msg.append(obstacle_i.to_rosmsg())
-        #
-        # self.pub_obstacle_list.publish(msg)
-        # rospy.loginfo(self.name + ": Published active obstacles")
+        msg = obstacleListMsg()
+        for obstacle_i in self.map:
+            msg.append(obstacle_i.to_rosmsg())
+
+        self.pub_obstacle_map.publish(msg)
+        rospy.loginfo(self.name + ": Published obstacle map")
         return
 
     def _update_map(self):
@@ -69,6 +70,7 @@ class ObstacleSensor(object):
 
             if not already_exists:
                 self.map.append(new_obstacle_i)
+        return
 
     def _check_if_within(self, obstacle):
         # type: (obstacleMsg) -> bool
@@ -79,8 +81,7 @@ class ObstacleSensor(object):
         obs_pos = np.array(obstacle.pose[:3])
         return np.linalg.norm((self.uav_pose, obs_pos)) <= self.radius
 
-    def start(self, filepath):
-        # type: (str) -> None
+    def start(self):
         """main function of ObstaclesSensor. First reads all obstacles from the xml file, then publishes all obstacles
         that are within range of the uav."""
 

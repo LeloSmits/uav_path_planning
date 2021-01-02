@@ -83,6 +83,7 @@ class ObstacleSensor(object):
         return
 
     def _pose_callback(self, data):
+        # type: (PoseStamped) -> None
         """Callback function for the subscription to /mavros/local_position/pose."""
         self.uav_pose = data
         return
