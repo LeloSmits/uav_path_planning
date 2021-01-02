@@ -1,7 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="2b69f1ab-9d54-4496-8af0-1eef0c768d44" name="Default Changelist" comment="Updated version" />
+    <list default="true" id="2b69f1ab-9d54-4496-8af0-1eef0c768d44" name="Default Changelist" comment="Updated version">
+      <change afterPath="$PROJECT_DIR$/examples/funcAsArgument.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/nodes/path_planning_node.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/py_uav_path_planning/path_planning/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/py_uav_path_planning/path_planning/helper/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/py_uav_path_planning/path_planning/helper/get_ellipse_radii.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/py_uav_path_planning/path_planning/helper/obstacle_name_to_danger.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/py_uav_path_planning/path_planning/potentialfield.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/py_uav_path_planning/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/py_uav_path_planning/__init__.py" afterDir="false" />
+    </list>
     <list id="56129878-e329-44c7-8054-745bd1d46105" name="Example Folder" comment="Created Example folder for the gazebo worlds and other stuff " />
     <list id="b71ee3ab-dd20-4e73-a8c1-7d0e4b813f8c" name="New folder Node" comment="Put all node files in here that are called with &quot;rosrun path_planning_private node123&quot;" />
     <list id="00b5d67a-2643-4fb0-9eb5-5ebf3465e4e2" name="New Project Structure" comment="" />
