@@ -43,10 +43,9 @@ class ObstacleMap(object):
     def _pub_obstacle_map(self):
         """Publisher Function that publishes self.active_obstacles in the ObstacleListMsg format
         to ~/active_obstacles."""
-        # ToDo:
         msg = obstacleListMsg()
         for obstacle_i in self.map:
-            msg.append(obstacle_i.to_rosmsg())
+            msg.obstacleList.append(obstacle_i)
 
         self.pub_obstacle_map.publish(msg)
         rospy.loginfo(self.name + ": Published obstacle map")
@@ -79,7 +78,7 @@ class ObstacleMap(object):
         uav_pos = np.array(
             [self.uav_pose.pose.position.x, self.uav_pose.pose.position.y, self.uav_pose.pose.position.z])
         obs_pos = np.array(obstacle.pose[:3])
-        return np.linalg.norm((self.uav_pose, obs_pos)) <= self.radius
+        return np.linalg.norm((uav_pos, obs_pos)) <= self.radius
 
     def start(self):
         """main function of ObstaclesSensor. First reads all obstacles from the xml file, then publishes all obstacles

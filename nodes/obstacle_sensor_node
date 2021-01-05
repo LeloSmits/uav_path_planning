@@ -4,7 +4,7 @@ import sys
 from py_uav_path_planning import ObstacleSensor
 
 if __name__ == '__main__':
-    if len(sys.argv) < 2 or len(sys.argv) > 4:
+    if len(sys.argv) != 2:
         print("obstacle_sensor node not started. " +
               "Usage is: rosrun uav_path_planning obstacle_sensor_node /path/to/gazebo_world.xml")
     else:

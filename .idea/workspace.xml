@@ -2,14 +2,20 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="2b69f1ab-9d54-4496-8af0-1eef0c768d44" name="Default Changelist" comment="Updated version">
-      <change afterPath="$PROJECT_DIR$/examples/funcAsArgument.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/nodes/path_planning_node.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/py_uav_path_planning/path_planning/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/py_uav_path_planning/path_planning/helper/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/py_uav_path_planning/path_planning/helper/get_ellipse_radii.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/py_uav_path_planning/path_planning/helper/obstacle_name_to_danger.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/py_uav_path_planning/path_planning/potentialfield.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/nodes/path_planning_node" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/py_uav_path_planning/path_planning/helper/potential_functions.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/py_uav_path_planning/path_planning/local_path_planning.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nodes/obstacle_map_node" beforeDir="false" afterPath="$PROJECT_DIR$/nodes/obstacle_map_node" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nodes/obstacle_sensor_node" beforeDir="false" afterPath="$PROJECT_DIR$/nodes/obstacle_sensor_node" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nodes/path_planning_node.py" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/mavros_path_planning_test.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/py_uav_path_planning/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/py_uav_path_planning/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/py_uav_path_planning/obstacle_map/obstacle_map.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/py_uav_path_planning/obstacle_map/obstacle_map.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/py_uav_path_planning/obstacle_sensor/obstacle_sensor.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/py_uav_path_planning/obstacle_sensor/obstacle_sensor.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/py_uav_path_planning/path_planning/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/py_uav_path_planning/path_planning/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/py_uav_path_planning/path_planning/helper/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/py_uav_path_planning/path_planning/helper/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/py_uav_path_planning/path_planning/potentialfield.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/py_uav_path_planning/path_planning/potentialfield.py" afterDir="false" />
     </list>
     <list id="56129878-e329-44c7-8054-745bd1d46105" name="Example Folder" comment="Created Example folder for the gazebo worlds and other stuff " />
     <list id="b71ee3ab-dd20-4e73-a8c1-7d0e4b813f8c" name="New folder Node" comment="Put all node files in here that are called with &quot;rosrun path_planning_private node123&quot;" />
@@ -58,6 +64,7 @@
     <property name="node.js.path.for.package.tslint" value="project" />
     <property name="node.js.selected.package.eslint" value="(autodetect)" />
     <property name="node.js.selected.package.tslint" value="(autodetect)" />
+    <property name="restartRequiresConfirmation" value="false" />
     <property name="settings.editor.selected.configurable" value="project.propVCSSupport.Mappings" />
   </component>
   <component name="RecentsManager">
@@ -66,7 +73,7 @@
       <recent name="$PROJECT_DIR$/nodes" />
     </key>
   </component>
-  <component name="RunManager">
+  <component name="RunManager" selected="Python.potentialfield">
     <configuration default="true" type="PythonConfigurationType" factoryName="Python">
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -89,6 +96,56 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="potential_functions" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="path_planning_private" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/src/py_uav_path_planning/path_planning/helper" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/src/py_uav_path_planning/path_planning/helper/potential_functions.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="true" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="potentialfield" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="path_planning_private" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/src/py_uav_path_planning/path_planning" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/src/py_uav_path_planning/path_planning/potentialfield.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="true" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Python.potentialfield" />
+        <item itemvalue="Python.potential_functions" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
@@ -112,6 +169,10 @@
       <workItem from="1609517952656" duration="4660000" />
       <workItem from="1609542118024" duration="1268000" />
       <workItem from="1609578046981" duration="800000" />
+      <workItem from="1609678445627" duration="791000" />
+      <workItem from="1609714210254" duration="2466000" />
+      <workItem from="1609755483906" duration="9750000" />
+      <workItem from="1609851949421" duration="3135000" />
     </task>
     <task id="LOCAL-00001" summary="Created example folder">
       <created>1609542928670</created>
@@ -190,5 +251,20 @@
     <MESSAGE value="Updated error message" />
     <MESSAGE value="Updated version" />
     <option name="LAST_COMMIT_MESSAGE" value="Updated version" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/src/py_uav_path_planning/path_planning/helper/potential_functions.py</url>
+          <line>19</line>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/path_planning_private$potentialfield.coverage" NAME="potentialfield Coverage Results" MODIFIED="1609757620359" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/py_uav_path_planning/path_planning" />
+    <SUITE FILE_PATH="coverage/path_planning_private$potential_functions.coverage" NAME="potential_functions Coverage Results" MODIFIED="1609757616515" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/py_uav_path_planning/path_planning/helper" />
   </component>
 </project>
