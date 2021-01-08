@@ -1,20 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
   <component name="ChangeListManager">
-    <list default="true" id="2b69f1ab-9d54-4496-8af0-1eef0c768d44" name="Default Changelist" comment="Updated version">
-      <change afterPath="$PROJECT_DIR$/nodes/path_planning_node" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/py_uav_path_planning/path_planning/helper/potential_functions.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/py_uav_path_planning/path_planning/local_path_planning.py" afterDir="false" />
+    <list default="true" id="2b69f1ab-9d54-4496-8af0-1eef0c768d44" name="Default Changelist" comment="Piendl-Branch Erste Version">
+      <change afterPath="$PROJECT_DIR$/examples/gazebo_worlds/empty.world" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/examples/gazebo_worlds/gazebo_BunchOfBoxes.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/launch/path_planner_01.launch" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/nodes/global_path_node" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/py_uav_path_planning/path_planning/global_path.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nodes/obstacle_map_node" beforeDir="false" afterPath="$PROJECT_DIR$/nodes/obstacle_map_node" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/nodes/obstacle_sensor_node" beforeDir="false" afterPath="$PROJECT_DIR$/nodes/obstacle_sensor_node" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nodes/path_planning_node.py" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/mavros_path_planning_test.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nodes/path_planning_node" beforeDir="false" afterPath="$PROJECT_DIR$/nodes/local_path_planner_node" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/mavros_path_planning_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/mavros_path_planning_test.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/py_uav_path_planning/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/py_uav_path_planning/__init__.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/py_uav_path_planning/obstacle_map/obstacle_map.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/py_uav_path_planning/obstacle_map/obstacle_map.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/py_uav_path_planning/obstacle_sensor/helper/obstacle.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/py_uav_path_planning/obstacle_sensor/helper/obstacle.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/py_uav_path_planning/obstacle_sensor/helper/read_gazebo_xml.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/py_uav_path_planning/obstacle_sensor/helper/read_gazebo_xml.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/py_uav_path_planning/obstacle_sensor/obstacle_sensor.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/py_uav_path_planning/obstacle_sensor/obstacle_sensor.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/py_uav_path_planning/path_planning/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/py_uav_path_planning/path_planning/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/py_uav_path_planning/path_planning/helper/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/py_uav_path_planning/path_planning/helper/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/py_uav_path_planning/path_planning/helper/potential_functions.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/py_uav_path_planning/path_planning/helper/potential_functions.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/py_uav_path_planning/path_planning/local_path_planning.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/py_uav_path_planning/path_planning/local_path_planning.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/py_uav_path_planning/path_planning/potentialfield.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/py_uav_path_planning/path_planning/potentialfield.py" afterDir="false" />
     </list>
     <list id="56129878-e329-44c7-8054-745bd1d46105" name="Example Folder" comment="Created Example folder for the gazebo worlds and other stuff " />
@@ -54,6 +62,7 @@
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">
+    <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
@@ -73,7 +82,7 @@
       <recent name="$PROJECT_DIR$/nodes" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.potentialfield">
+  <component name="RunManager" selected="Python.draw_potential_field">
     <configuration default="true" type="PythonConfigurationType" factoryName="Python">
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -88,6 +97,28 @@
       <module name="" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="SCRIPT_NAME" value="" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="true" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="draw_potential_field" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="path_planning_private" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/src/py_uav_path_planning/extras" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/src/py_uav_path_planning/extras/draw_potential_field.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="true" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -142,6 +173,7 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.draw_potential_field" />
         <item itemvalue="Python.potentialfield" />
         <item itemvalue="Python.potential_functions" />
       </list>
@@ -172,7 +204,10 @@
       <workItem from="1609678445627" duration="791000" />
       <workItem from="1609714210254" duration="2466000" />
       <workItem from="1609755483906" duration="9750000" />
-      <workItem from="1609851949421" duration="3135000" />
+      <workItem from="1609851949421" duration="24027000" />
+      <workItem from="1609951410903" duration="9530000" />
+      <workItem from="1610027139627" duration="3933000" />
+      <workItem from="1610098906629" duration="3234000" />
     </task>
     <task id="LOCAL-00001" summary="Created example folder">
       <created>1609542928670</created>
@@ -223,7 +258,14 @@
       <option name="project" value="LOCAL" />
       <updated>1609582498170</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="Piendl-Branch Erste Version">
+      <created>1609857378070</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1609857378070</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -242,6 +284,7 @@
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="VcsManagerConfiguration">
+    <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
     <MESSAGE value="Updated project structure, updated obstacle sensor package, created obstacle map package" />
     <MESSAGE value="Created example folder" />
     <MESSAGE value="Created folder for nodes" />
@@ -250,7 +293,8 @@
     <MESSAGE value="Created subpackage for the obstacle sensor code" />
     <MESSAGE value="Updated error message" />
     <MESSAGE value="Updated version" />
-    <option name="LAST_COMMIT_MESSAGE" value="Updated version" />
+    <MESSAGE value="Piendl-Branch Erste Version" />
+    <option name="LAST_COMMIT_MESSAGE" value="Piendl-Branch Erste Version" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

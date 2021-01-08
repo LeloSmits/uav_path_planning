@@ -57,10 +57,10 @@ def obstacle_potential_function(X, Xobs, kr, rho0, der=False):
 
         if not der:
             res = .5 * kr * (1 / dist - 1 / rho0) ** 2
-            res[np.where(dist > rho0**2)] = 0  # if outside of influence, set pot to 0
+            res[np.where(dist > rho0)] = 0  # if outside of influence, set pot to 0
             return res
         else:
             res = -kr * (1/dist**3 * (1/dist - 1/rho0))[:, np.newaxis] * (X - Xobs)  # ToDo: Check if derivative is correct
-            res[np.where(dist > rho0 ** 2), :] = 0
+            res[np.where(dist > rho0), :] = 0
             return res
 

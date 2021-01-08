@@ -24,6 +24,13 @@ include_directories(include ${catkin_INCLUDE_DIRS})
 
 install(
     PROGRAMS
-    nodes/obstacle_map_node nodes/obstacle_map_node nodes/path_planning_node
+    nodes/obstacle_map_node
+    nodes/obstacle_map_node
+    nodes/local_path_planner_node
+    nodes/global_path_node
+    scripts/mavros_path_planning_test.py
     DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
     )
+
+install(DIRECTORY launch/
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/launch)

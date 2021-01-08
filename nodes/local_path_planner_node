@@ -1,8 +1,8 @@
 #!/usr/bin/env python2
 
 import sys
-from py_uav_path_planning import ObstacleSensor
+from py_uav_path_planning import LocalPathPlanner
 
 if __name__ == '__main__':
-    node = ObstacleSensor()
+    node = LocalPathPlanner()
     node.start()

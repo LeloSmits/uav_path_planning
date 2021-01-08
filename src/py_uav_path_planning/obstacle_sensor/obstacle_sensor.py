@@ -9,34 +9,33 @@ from geometry_msgs.msg import PoseStamped
 from scipy.spatial.transform import Rotation as R
 from uav_path_planning.msg import obstacleMsg, obstacleListMsg
 
-from helper import Obstacle, read_gazebo_xml
+from helper import read_gazebo_xml
 
 
 # ToDo: Implement a method that checks if the world from the xml file is the same as currently running in gazebo
-# ToDo: Check if Class Obstacle is needed or everything can be done with obstacleMsg
 class ObstacleSensor(object):
     def __init__(self):
         self.name = 'obstacle_sensor'
-        rospy.init_node(self.name)  # ToDo: In all rospy.loginfo replace obstacle_sensor with self.name
+        rospy.init_node(self.name)
 
-        self.loop_rate = rospy.Rate(1)
-        self.all_obstacles = list()  # type: typing.List[Obstacle]
-        self.active_obstacles = list()  # type: typing.List[Obstacle]
+        self.loop_rate = rospy.Rate(10)
+        self.all_obstacles = list()  # type: obstacleListMsg
+        self.active_obstacles = list()  # type: obstacleListMsg
         self.uav_pose = None
-        self.range = 20
+        self.range = 50
         self.angle = 45  # Added angle to only include obstacles within field of view
 
         rospy.Subscriber('/mavros/local_position/pose', PoseStamped, self._pose_callback)
-        self.pub_obstacle_list = rospy.Publisher("~/active_obstacles", obstacleListMsg, queue_size=100)  # ToDo: find out if queue_size is important
+        self.pub_obstacle_list = rospy.Publisher("active_obstacles", obstacleListMsg, queue_size=1)
 
-        rospy.loginfo("obstacle_sensor: Node initialized")
+        rospy.loginfo(self.name + ": Node initialized")
 
     def get_distance_uav_obstacle(self, obstacle):
-        # type: (Obstacle) -> float
+        # type: (obstacleMsg) -> float
         """Returns the euclidean distance between the uav and the obstacle.
         :arg obstacle: Obstacle to measure the distance to."""
 
-        assert isinstance(obstacle, Obstacle)
+        assert isinstance(obstacle, obstacleMsg)
         uav_pos = np.array(
             [self.uav_pose.pose.position.x, self.uav_pose.pose.position.y, self.uav_pose.pose.position.z])
         obs_pos = np.array(obstacle.pose[:3])
@@ -76,11 +75,11 @@ class ObstacleSensor(object):
     def _get_active_obstacles(self):
         """Loops over all obstacles in self.all_obstacles and checks wether they are within the sensor's scope, defined
         by self.range and self.angle. If true, they are added to self.active_obstacles."""
-        self.active_obstacles = list()
+        self.active_obstacles = obstacleListMsg()
         for obstacle_i in self.all_obstacles:
             if self.get_distance_uav_obstacle(obstacle_i) <= self.range and \
                     self.get_angle_uav_obstacles(obstacle_i) <= self.angle:
-                self.active_obstacles.append(obstacle_i)
+                self.active_obstacles.obstacleList.append(obstacle_i)
         return
 
     def _pose_callback(self, data):
@@ -91,35 +90,46 @@ class ObstacleSensor(object):
 
     def _pub_active_obstacles(self):
         """Publisher Function that publishes self.active_obstacles in the ObstacleListMsg format
-        to ~/active_obstacles."""
-        msg = obstacleListMsg()
-        for obstacle_i in self.active_obstacles:
-            msg.obstacleList.append(obstacle_i.to_rosmsg())
-
-        self.pub_obstacle_list.publish(msg)
-        rospy.loginfo("obstacle_sensor: Published active obstacles")
+            to ~/active_obstacles."""
+        self.pub_obstacle_list.publish(self.active_obstacles)
+        rospy.loginfo(self.name + ": Published active obstacles")
         return
 
-    def start(self, filepath):
-        # type: (str) -> None
+    # def _pub_active_obstacles(self):
+    #     """Publisher Function that publishes self.active_obstacles in the ObstacleListMsg format
+    #     to ~/active_obstacles."""
+    #     msg = obstacleListMsg()
+    #     for obstacle_i in self.active_obstacles:
+    #         msg.obstacleList.append(obstacle_i.to_rosmsg())
+    #     print(msg)
+    #     self.pub_obstacle_list.publish(msg)
+    #     rospy.loginfo(self.name + ": Published active obstacles")
+    #     return
+
+    def start(self):
         """main function of ObstaclesSensor. First reads all obstacles from the xml file, then publishes all obstacles
         that are within range of the uav."""
 
         rospy.loginfo("obstacle_sensor: Node started")
 
+        while not rospy.has_param("path_to_gazebo_xml"):
+            rospy.loginfo(self.name + ": Param path_to_gazebo_xml is not set, waiting.")
+            rospy.sleep(.1)
+        filepath = rospy.get_param("path_to_gazebo_xml")
+
         # Read the XML file
         self._get_all_obstacles(filepath)
-        rospy.loginfo("obstacle_sensor: All Obstacles have been read from the XML-File")
+        rospy.loginfo(self.name + ": All Obstacles have been read from the XML-File")
 
         # Wait until the UAV position is published. Otherwise there will be errors
         # because self.uav_pose is by default = None
         rospy.sleep(1)
-        while True:
+        while not rospy.is_shutdown():
             if self.uav_pose is None:
-                rospy.loginfo("obstacle_sensor: Waiting for UAV Pose")
+                rospy.loginfo(self.name + ": Waiting for UAV Pose")
                 self.loop_rate.sleep()
             else:
-                rospy.loginfo("obstacle_sensor: UAV Pose received")
+                rospy.loginfo(self.name + ": UAV Pose received")
                 break
 
         # Loop until infinity

@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<launch>
+    <group ns="path_planning">
+        <param name="path_to_gazebo_xml" value="/home/daniel/catkin_ws/src/path_planning_private/examples/gazebo_worlds/gazebo_BunchOfBoxes.xml" />
+        <param name="tol_wp_local" value=".5" />
+        <param name="tol_wp_global" value=".1" />
+        <param name="takeoff_altitude" value="0.5" />
+<!--        <arg name="wp_global_all" value=-->
+<!--            "[header:-->
+<!--              seq: 0-->
+<!--              stamp:-->
+<!--                secs: 0-->
+<!--                nsecs: 0-->
+<!--              frame_id: ''-->
+<!--            poses:-->
+<!--            - position:-->
+<!--                x: 25.0-->
+<!--                y: 0.0-->
+<!--                z: 0.5-->
+<!--              orientation:-->
+<!--                x: 0.0-->
+<!--                y: 0.0-->
+<!--                z: 0.0-->
+<!--                w: 0.0]" />-->
+        <node pkg="uav_path_planning" type="obstacle_sensor_node" name="obstacle_sensor_node" launch-prefix="xterm -e"/>
+        <node pkg="uav_path_planning" type="obstacle_map_node" name="obstacle_map_node" launch-prefix="xterm -e"/>
+        <node pkg="uav_path_planning" type="local_path_planner_node" name="local_path_planner_node" launch-prefix="xterm -e"/>
+        <node pkg="uav_path_planning" type="global_path_node" name="global_path_node" launch-prefix="xterm -e"/>
+    </group>
+
+    <!-- MAVROS, PX4 SITL and Gazebo -->
+    <include file="$(find px4)/launch/mavros_posix_sitl.launch">
+        <arg name="world" value="/home/daniel/catkin_ws/src/path_planning_private/examples/gazebo_worlds/gazebo_BunchOfBoxes.xml"/>
+    </include>
+
+</launch>

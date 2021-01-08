@@ -29,6 +29,6 @@ def read_gazebo_xml(filename, obstacle_prefix='obs_'):
 
             newObstacle.typeOfObstacle = model.attrib['name'].split('_')[1]
 
-            allObstacles.append(newObstacle)
+            allObstacles.append(newObstacle.to_rosmsg())
 
     return allObstacles

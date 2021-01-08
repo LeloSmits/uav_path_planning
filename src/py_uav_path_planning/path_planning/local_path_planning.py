@@ -1,6 +1,5 @@
 #!/usr/bin/env python2
 
-import math
 import numpy as np
 import rospy
 import typing
@@ -18,23 +17,27 @@ class LocalPathPlanner(object):
         self.name = 'local_path_planner'
         rospy.init_node(self.name)
 
-        self._new_wp_rate = rospy.Rate(2)
-        self._pub_wp_rate = rospy.Rate(10)
+        self._new_wp_rate = rospy.Rate(10)
+        self._pub_wp_rate = rospy.Rate(20)
         self._map = list()  # type: typing.List[obstacleMsg]
         self.uav_pose = None  # type: PoseStamped  # probably
+        self.goal_pose_stamped = None  # type: PoseStamped
         self.goal_coordinate = None  # type: np.array
 
-        self.step_size = 1.  # type: float
+        self.step_size = 1.  # type: float  # ToDo: Make adaptive
         self.max_iter_per_wp = 100  # type: int
-        self.new_wp = None  # type: PoseStamped
-        self._wp_tolerance = 0.1  # type: float
+        self.wp_local_new = None  # type: PoseStamped
+        self.tol_wp_local = rospy.get_param('tol_wp_local', .5)  # Absolute tolerance to set WAYPOINT_ACHIEVED to True when L2-Distance between UAV and local waypoint is less or equal
+        self.tol_wp_global = rospy.get_param('tol_wp_global', .1)  # Same as above but for gloabl waypoint
 
         rospy.Subscriber('/mavros/local_position/pose', PoseStamped, self._pose_callback)
-        rospy.Subscriber('~/obstacle_map', obstacleListMsg, self._map_callback)
+        rospy.Subscriber('obstacle_map', obstacleListMsg, self._map_callback)
+        rospy.Subscriber('wp_global_current', PoseStamped, self._wp_global_callback)
 
-        self._pub_new_wp = rospy.Publisher("mavros/setpoint_position/local", PoseStamped,
-                                                  queue_size=1)  # ToDo: find out if queue_size is important
-        self._new_wp_thread = Thread(target=self._pub_waypoints, args=())
+        self._pub_new_wp = rospy.Publisher("/mavros/setpoint_position/local", PoseStamped,
+                                           queue_size=1)  # ToDo: find out if queue_size is important
+        self._thread_new_wp = Thread(target=self._pub_waypoints, args=())
+        self._thread_new_wp.daemon = True  # Deamon-Threads werden gekillt, wenn das Hauptprogramm beendet
 
         rospy.loginfo(self.name + ": Node initialized")
         return
@@ -51,25 +54,26 @@ class LocalPathPlanner(object):
         self._map = data.obstacleList
         return
 
+    def _wp_global_callback(self, data):
+        self.goal_pose_stamped = data
+        return
+
     def _pub_waypoints(self):
         """Publisher Function that publishes self.new_wp in the PoseStamped format
         to mavros/setpoint_position/local."""
 
         new_wp_msg = PoseStamped()
-        new_wp_msg.header = Header()
 
         while not rospy.is_shutdown():
+            new_wp_msg.header = Header()
             new_wp_msg.header.stamp = rospy.Time.now()
 
-            new_wp_msg.pose.position.x = self.new_wp[0]  # x
-            new_wp_msg.pose.position.y = self.new_wp[1]  # y
-            new_wp_msg.pose.position.z = self.new_wp[2]  # z
+            new_wp_msg.pose.position.x = self.wp_local_new[0]  # x
+            new_wp_msg.pose.position.y = self.wp_local_new[1]  # y
+            new_wp_msg.pose.position.z = .5  # self.new_wp[2]  # z  # ToDo: Make Variable
 
             self._pub_new_wp.publish(new_wp_msg)
-            try:  # prevent garbage in console output when thread is killed
-                self._pub_wp_rate.sleep()
-            except rospy.ROSInterruptException:
-                pass
+            self._pub_wp_rate.sleep()
         return
 
     def get_new_wp(self):
@@ -83,36 +87,42 @@ class LocalPathPlanner(object):
 
             gradient = get_vector_field(uav_coordinate=uav_pos, goal_coordinate=self.goal_coordinate,
                                         obstacle_map=self._map)
+
             potential_here = get_potential_field(uav_coordinate=uav_pos, goal_coordinate=self.goal_coordinate,
                                                  obstacle_map=self._map)
 
-            uav_pos_new = uav_pos - step_size * gradient  # Subtraction because we want to descent / move to smaller potential
+            uav_pos_new = uav_pos - step_size * gradient / np.linalg.norm(gradient)  # Subtraction because we want to descent / move to smaller potential
             potential_new = get_potential_field(uav_coordinate=uav_pos_new, goal_coordinate=self.goal_coordinate,
                                                 obstacle_map=self._map)
 
-            if potential_new > potential_here: step_size /= 2
-            else: return uav_pos_new
+            if potential_new > potential_here:
+                step_size /= 2
+            else:
+                return uav_pos_new
         return uav_pos
 
+    # ToDo: find_path tries to reach self.goal_coordinate even when wp_global_current has changed.
+    #  Change so that find_path exits when wp_global_current changes
     def find_path(self):
         uav_pos = np.array([self.uav_pose.pose.position.x, self.uav_pose.pose.position.y,
                             self.uav_pose.pose.position.z])
 
-        while True:
-            while not all(np.isclose(uav_pos, self.goal_coordinate, atol=self._wp_tolerance)):
-                self.new_wp = self.get_new_wp()
+        while not all(np.isclose(uav_pos, self.goal_coordinate, atol=self.tol_wp_global)):  # return after global WP is reached
+            self.wp_local_new = self.get_new_wp()
 
-                if not self._new_wp_thread.isAlive():  # Start publishing waypoints
-                    self._new_wp_thread.start()
+            if not self._thread_new_wp.isAlive():  # Start publishing waypoints
+                self._thread_new_wp.start()
 
-                uav_pos = np.array([self.uav_pose.pose.position.x, self.uav_pose.pose.position.y,
-                                    self.uav_pose.pose.position.z])
+            uav_pos = np.array([self.uav_pose.pose.position.x, self.uav_pose.pose.position.y,
+                                self.uav_pose.pose.position.z])
 
-                self._new_wp_rate.sleep()
+            self._new_wp_rate.sleep()
 
-            self.new_wp = self.goal_coordinate
+        self.wp_local_new = self.goal_coordinate
+        self._new_wp_rate.sleep()
+        return
 
-    def start(self, goal_coordinate):
+    def start(self):
         """main function of LocalPathPlanner"""
 
         rospy.loginfo(self.name + ": Node started")
@@ -126,12 +136,15 @@ class LocalPathPlanner(object):
                 rospy.loginfo(self.name + ": UAV Pose received")
                 break
 
-        self.goal_coordinate = goal_coordinate
+        while self.goal_pose_stamped is None:
+            rospy.sleep(1)
 
-        self._new_wp_thread.daemon = True  # keine Ahnung, wofuer das ist. War in den Px4-py tutorials
-
+        rospy.loginfo(self.name + ': Starting local path planning')
         while not rospy.is_shutdown():
+            # self.goal_pose_stamped = rospy.get_param('wp_global_current')
+            self.goal_coordinate = np.array([self.goal_pose_stamped.pose.position.x,
+                                             self.goal_pose_stamped.pose.position.y,
+                                             self.goal_pose_stamped.pose.position.z])
             self.find_path()
-            self._new_wp_rate.sleep()
 
         return

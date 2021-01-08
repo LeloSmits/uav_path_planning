@@ -14,7 +14,7 @@ class ObstacleMap(object):
         self.name = 'obstacle_map'
         rospy.init_node(self.name)
 
-        self.loop_rate = rospy.Rate(1)
+        self.loop_rate = rospy.Rate(10)
 
         self.uav_pose = None
 
@@ -22,9 +22,9 @@ class ObstacleMap(object):
         self.map = list()  # type: typing.List[obstacleMsg]
         self.radius = 50  # in meters
 
-        rospy.Subscriber('~/active_obstacles', obstacleListMsg, self._obstacle_list_callback)
+        rospy.Subscriber('active_obstacles', obstacleListMsg, self._obstacle_list_callback)
         rospy.Subscriber('/mavros/local_position/pose', PoseStamped, self._pose_callback)
-        self.pub_obstacle_map = rospy.Publisher("~/obstacle_map", obstacleListMsg, queue_size=100)  # ToDo: find out if queue_size is important
+        self.pub_obstacle_map = rospy.Publisher("obstacle_map", obstacleListMsg, queue_size=1)  # ToDo: find out if queue_size is important
 
         rospy.loginfo(self.name + ": Node initialized")
 
@@ -69,6 +69,7 @@ class ObstacleMap(object):
 
             if not already_exists:
                 self.map.append(new_obstacle_i)
+        print(self.map)
         return
 
     def _check_if_within(self, obstacle):

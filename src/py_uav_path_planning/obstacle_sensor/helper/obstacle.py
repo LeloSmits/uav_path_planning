@@ -1,10 +1,12 @@
 #!/usr/bin/env python2
 
 from uav_path_planning.msg import obstacleMsg
+import warnings
 
 
 class Obstacle:
     def __init__(self, name):
+        warnings.warn("Using the Obstacle class is deprecated, use obstacleMsg instead")
         self.name = name
         self.pose = list()  # x y z alpha beta gamma
         self.geometry = 'box'  # box, cylinder, sphere
