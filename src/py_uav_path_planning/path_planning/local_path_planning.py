@@ -10,6 +10,7 @@ from uav_path_planning.msg import obstacleMsg, obstacleListMsg
 from std_msgs.msg import Header
 
 from potentialfield import get_potential_field, get_vector_field
+from mavros_msgs.msg import PositionTarget
 
 
 class LocalPathPlanner(object):
@@ -34,8 +35,7 @@ class LocalPathPlanner(object):
         rospy.Subscriber('obstacle_map', obstacleListMsg, self._map_callback)
         rospy.Subscriber('wp_global_current', PoseStamped, self._wp_global_callback)
 
-        self._pub_new_wp = rospy.Publisher("/mavros/setpoint_position/local", PoseStamped,
-                                           queue_size=1)  # ToDo: find out if queue_size is important
+        self._pub_new_wp = rospy.Publisher("wp_local_current", PositionTarget, queue_size=1)
         self._thread_new_wp = Thread(target=self._pub_waypoints, args=())
         self._thread_new_wp.daemon = True  # Deamon-Threads werden gekillt, wenn das Hauptprogramm beendet
 
@@ -62,16 +62,21 @@ class LocalPathPlanner(object):
         """Publisher Function that publishes self.new_wp in the PoseStamped format
         to mavros/setpoint_position/local."""
 
-        new_wp_msg = PoseStamped()
+        new_wp_msg = PositionTarget()
+        # new_wp_msg.type_mask = 3064  # 0b101111111000
+        new_wp_msg.coordinate_frame = 1
 
         while not rospy.is_shutdown():
             new_wp_msg.header = Header()
             new_wp_msg.header.stamp = rospy.Time.now()
 
-            new_wp_msg.pose.position.x = self.wp_local_new[0]  # x
-            new_wp_msg.pose.position.y = self.wp_local_new[1]  # y
-            new_wp_msg.pose.position.z = .5  # self.new_wp[2]  # z  # ToDo: Make Variable
+            new_wp_msg.position.x = self.wp_local_new[0]  # x
+            new_wp_msg.position.y = self.wp_local_new[1]  # y
+            new_wp_msg.position.z = .5  # self.new_wp[2]  # z  # ToDo: Make Variable
 
+            new_wp_msg.yaw = np.arccos((np.array([self.uav_pose.pose.position.x, self.uav_pose.pose.position.y]).dot(self.wp_local_new[:2])
+                                        / (np.linalg.norm(np.array([self.uav_pose.pose.position.x, self.uav_pose.pose.position.y])) * np.linalg.norm(self.wp_local_new[:2]))))
+            print(new_wp_msg.yaw)
             self._pub_new_wp.publish(new_wp_msg)
             self._pub_wp_rate.sleep()
         return

@@ -4,26 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2b69f1ab-9d54-4496-8af0-1eef0c768d44" name="Default Changelist" comment="Piendl-Branch Erste Version">
-      <change afterPath="$PROJECT_DIR$/examples/gazebo_worlds/empty.world" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/examples/gazebo_worlds/gazebo_BunchOfBoxes.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/launch/path_planner_01.launch" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/nodes/global_path_node" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/py_uav_path_planning/path_planning/global_path.py" afterDir="false" />
+    <list default="true" id="2b69f1ab-9d54-4496-8af0-1eef0c768d44" name="Default Changelist" comment="Example world">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nodes/obstacle_sensor_node" beforeDir="false" afterPath="$PROJECT_DIR$/nodes/obstacle_sensor_node" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nodes/path_planning_node" beforeDir="false" afterPath="$PROJECT_DIR$/nodes/local_path_planner_node" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/scripts/mavros_path_planning_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/mavros_path_planning_test.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/py_uav_path_planning/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/py_uav_path_planning/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/py_uav_path_planning/obstacle_map/obstacle_map.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/py_uav_path_planning/obstacle_map/obstacle_map.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/py_uav_path_planning/obstacle_sensor/helper/obstacle.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/py_uav_path_planning/obstacle_sensor/helper/obstacle.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/py_uav_path_planning/obstacle_sensor/helper/read_gazebo_xml.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/py_uav_path_planning/obstacle_sensor/helper/read_gazebo_xml.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/py_uav_path_planning/obstacle_sensor/obstacle_sensor.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/py_uav_path_planning/obstacle_sensor/obstacle_sensor.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/py_uav_path_planning/path_planning/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/py_uav_path_planning/path_planning/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/py_uav_path_planning/path_planning/helper/potential_functions.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/py_uav_path_planning/path_planning/helper/potential_functions.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/launch/path_planner_01.launch" beforeDir="false" afterPath="$PROJECT_DIR$/launch/path_planner_01.launch" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/py_uav_path_planning/path_planning/global_path.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/py_uav_path_planning/path_planning/global_path.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/py_uav_path_planning/path_planning/local_path_planning.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/py_uav_path_planning/path_planning/local_path_planning.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/py_uav_path_planning/path_planning/potentialfield.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/py_uav_path_planning/path_planning/potentialfield.py" afterDir="false" />
     </list>
     <list id="56129878-e329-44c7-8054-745bd1d46105" name="Example Folder" comment="Created Example folder for the gazebo worlds and other stuff " />
     <list id="b71ee3ab-dd20-4e73-a8c1-7d0e4b813f8c" name="New folder Node" comment="Put all node files in here that are called with &quot;rosrun path_planning_private node123&quot;" />
@@ -208,6 +193,7 @@
       <workItem from="1609951410903" duration="9530000" />
       <workItem from="1610027139627" duration="3933000" />
       <workItem from="1610098906629" duration="3234000" />
+      <workItem from="1610106843969" duration="7762000" />
     </task>
     <task id="LOCAL-00001" summary="Created example folder">
       <created>1609542928670</created>
@@ -265,7 +251,21 @@
       <option name="project" value="LOCAL" />
       <updated>1609857378070</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="Added a global path node, launch file, local path planner, example world">
+      <created>1610106887703</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1610106887703</updated>
+    </task>
+    <task id="LOCAL-00010" summary="Example world">
+      <created>1610106934195</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1610106934195</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -294,7 +294,9 @@
     <MESSAGE value="Updated error message" />
     <MESSAGE value="Updated version" />
     <MESSAGE value="Piendl-Branch Erste Version" />
-    <option name="LAST_COMMIT_MESSAGE" value="Piendl-Branch Erste Version" />
+    <MESSAGE value="Added a global path node, launch file, local path planner, example world" />
+    <MESSAGE value="Example world" />
+    <option name="LAST_COMMIT_MESSAGE" value="Example world" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

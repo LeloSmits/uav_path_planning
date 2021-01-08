@@ -4,7 +4,7 @@
         <param name="path_to_gazebo_xml" value="/home/daniel/catkin_ws/src/path_planning_private/examples/gazebo_worlds/gazebo_BunchOfBoxes.xml" />
         <param name="tol_wp_local" value=".5" />
         <param name="tol_wp_global" value=".1" />
-        <param name="takeoff_altitude" value="0.5" />
+        <param name="takeoff_altitude" value="0.8" />
 <!--        <arg name="wp_global_all" value=-->
 <!--            "[header:-->
 <!--              seq: 0-->
