@@ -4,11 +4,27 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2b69f1ab-9d54-4496-8af0-1eef0c768d44" name="Default Changelist" comment="Example world">
+    <list default="true" id="2b69f1ab-9d54-4496-8af0-1eef0c768d44" name="Default Changelist" comment="Coole Änderungen 1.0">
+      <change afterPath="$PROJECT_DIR$/examples/gazebo_worlds/gazebo_Corners.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/launch/path_planner_yaw_test.launch" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/py_uav_path_planning/path_planning/path_logs/path_log_12_01_2021_15_03_53" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/py_uav_path_planning/path_planning/path_logs/path_log_12_01_2021_15_15_42" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/py_uav_path_planning/path_planning/path_logs/path_log_12_01_2021_15_32_18" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/py_uav_path_planning/path_planning/path_logs/path_log_14_01_2021_18_54_31" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/py_uav_path_planning/path_planning/path_logs/path_log_14_01_2021_18_56_38" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/py_uav_path_planning/path_planning/path_logs/path_log_14_01_2021_19_00_00" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/py_uav_path_planning/path_planning/path_logs/path_log_14_01_2021_19_20_54" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/py_uav_path_planning/path_planning/path_logs/path_log_14_01_2021_19_32_57" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/py_uav_path_planning/path_planning/path_logs/path_log_14_01_2021_19_35_33" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/py_uav_path_planning/path_planning/path_logs/path_log_14_01_2021_19_39_42" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/py_uav_path_planning/path_planning/path_logs/path_log_14_01_2021_19_42_48" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/py_uav_path_planning/path_planning/path_logs/path_log_14_01_2021_19_44_38" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/launch/path_planner_01.launch" beforeDir="false" afterPath="$PROJECT_DIR$/launch/path_planner_01.launch" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/py_uav_path_planning/obstacle_map/obstacle_map.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/py_uav_path_planning/obstacle_map/obstacle_map.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/py_uav_path_planning/obstacle_sensor/obstacle_sensor.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/py_uav_path_planning/obstacle_sensor/obstacle_sensor.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/py_uav_path_planning/path_planning/global_path.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/py_uav_path_planning/path_planning/global_path.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/py_uav_path_planning/path_planning/local_path_planning.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/py_uav_path_planning/path_planning/local_path_planning.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/py_uav_path_planning/path_planning/potentialfield.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/py_uav_path_planning/path_planning/potentialfield.py" afterDir="false" />
     </list>
     <list id="56129878-e329-44c7-8054-745bd1d46105" name="Example Folder" comment="Created Example folder for the gazebo worlds and other stuff " />
     <list id="b71ee3ab-dd20-4e73-a8c1-7d0e4b813f8c" name="New folder Node" comment="Put all node files in here that are called with &quot;rosrun path_planning_private node123&quot;" />
@@ -28,6 +44,11 @@
     </option>
   </component>
   <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="main" />
+      </map>
+    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="GitSEFilterConfiguration">
@@ -51,7 +72,7 @@
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/launch" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.tslint" value="true" />
     <property name="node.js.path.for.package.eslint" value="project" />
@@ -59,9 +80,13 @@
     <property name="node.js.selected.package.eslint" value="(autodetect)" />
     <property name="node.js.selected.package.tslint" value="(autodetect)" />
     <property name="restartRequiresConfirmation" value="false" />
+    <property name="run.code.analysis.last.selected.profile" value="pProject Default" />
     <property name="settings.editor.selected.configurable" value="project.propVCSSupport.Mappings" />
   </component>
   <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/launch" />
+    </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/examples/gazebo_worlds" />
       <recent name="$PROJECT_DIR$/nodes" />
@@ -158,9 +183,11 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.draw_potential_field" />
         <item itemvalue="Python.potentialfield" />
         <item itemvalue="Python.potential_functions" />
+        <item itemvalue="Python.draw_potential_field" />
+        <item itemvalue="Python.draw_potential_field" />
+        <item itemvalue="Python.potentialfield" />
       </list>
     </recent_temporary>
   </component>
@@ -194,6 +221,12 @@
       <workItem from="1610027139627" duration="3933000" />
       <workItem from="1610098906629" duration="3234000" />
       <workItem from="1610106843969" duration="7762000" />
+      <workItem from="1610378784859" duration="2352000" />
+      <workItem from="1610460114374" duration="1867000" />
+      <workItem from="1610554167459" duration="609000" />
+      <workItem from="1610641312263" duration="3964000" />
+      <workItem from="1610648378863" duration="1439000" />
+      <workItem from="1610700014707" duration="597000" />
     </task>
     <task id="LOCAL-00001" summary="Created example folder">
       <created>1609542928670</created>

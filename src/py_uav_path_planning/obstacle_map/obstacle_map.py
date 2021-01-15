@@ -14,7 +14,7 @@ class ObstacleMap(object):
         self.name = 'obstacle_map'
         rospy.init_node(self.name)
 
-        self.loop_rate = rospy.Rate(10)
+        self.loop_rate = rospy.Rate(20)
 
         self.uav_pose = None
 
@@ -48,7 +48,7 @@ class ObstacleMap(object):
             msg.obstacleList.append(obstacle_i)
 
         self.pub_obstacle_map.publish(msg)
-        rospy.loginfo(self.name + ": Published obstacle map")
+        # rospy.loginfo(self.name + ": Published obstacle map")
         return
 
     def _update_map(self):
@@ -69,7 +69,7 @@ class ObstacleMap(object):
 
             if not already_exists:
                 self.map.append(new_obstacle_i)
-        print(self.map)
+                
         return
 
     def _check_if_within(self, obstacle):

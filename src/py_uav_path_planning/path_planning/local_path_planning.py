@@ -27,7 +27,7 @@ class LocalPathPlanner(object):
 
         self.step_size = 1.  # type: float  # ToDo: Make adaptive
         self.max_iter_per_wp = 100  # type: int
-        self.wp_local_new = None  # type: PoseStamped
+        self.wp_local_new = None  # type: np.ndarray
         self.tol_wp_local = rospy.get_param('tol_wp_local', .5)  # Absolute tolerance to set WAYPOINT_ACHIEVED to True when L2-Distance between UAV and local waypoint is less or equal
         self.tol_wp_global = rospy.get_param('tol_wp_global', .1)  # Same as above but for gloabl waypoint
 
@@ -63,7 +63,7 @@ class LocalPathPlanner(object):
         to mavros/setpoint_position/local."""
 
         new_wp_msg = PositionTarget()
-        # new_wp_msg.type_mask = 3064  # 0b101111111000
+        new_wp_msg.type_mask = 0b101111111000
         new_wp_msg.coordinate_frame = 1
 
         while not rospy.is_shutdown():
@@ -74,8 +74,11 @@ class LocalPathPlanner(object):
             new_wp_msg.position.y = self.wp_local_new[1]  # y
             new_wp_msg.position.z = .5  # self.new_wp[2]  # z  # ToDo: Make Variable
 
-            new_wp_msg.yaw = np.arccos((np.array([self.uav_pose.pose.position.x, self.uav_pose.pose.position.y]).dot(self.wp_local_new[:2])
-                                        / (np.linalg.norm(np.array([self.uav_pose.pose.position.x, self.uav_pose.pose.position.y])) * np.linalg.norm(self.wp_local_new[:2]))))
+            # ToDo: ignore yaw when new wp is less than a small distance away. Prevent aggressive rotation
+            # ToDo: Alternative: limit yaw rate
+            vec_uav_wp = self.wp_local_new[:2] - np.array([self.uav_pose.pose.position.x, self.uav_pose.pose.position.y])
+            new_wp_msg.yaw = np.arccos((vec_uav_wp.dot(np.array([1, 0])) / np.linalg.norm(vec_uav_wp)))
+
             print(new_wp_msg.yaw)
             self._pub_new_wp.publish(new_wp_msg)
             self._pub_wp_rate.sleep()
@@ -124,7 +127,7 @@ class LocalPathPlanner(object):
             self._new_wp_rate.sleep()
 
         self.wp_local_new = self.goal_coordinate
-        self._new_wp_rate.sleep()
+        # self._new_wp_rate.sleep()
         return
 
     def start(self):

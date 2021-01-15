@@ -8,9 +8,9 @@ from helper import attractive_potential_function, obstacle_potential_function
 
 
 # ToDo: Maybe write functions as service calls
-kr = 15
-rho0 = 5
-ka = 1
+kr = 10
+rho0 = 10
+ka = 2
 
 
 def get_potential_field(uav_coordinate, goal_coordinate, obstacle_map):

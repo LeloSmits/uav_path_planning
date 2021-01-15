@@ -23,29 +23,32 @@ class GlobalPath(object):
 
         # ToDo: read from params
         # self.wp_global_all = rospy.get_param('wp_global_all')  # type: typing.List[PoseStamped]
-        self.wp_global_all = (PoseStamped(), PoseStamped(), PoseStamped())
+        self.wp_global_all = (PoseStamped(), )  # PoseStamped(), PoseStamped())
 
-        self.wp_global_all[0].pose.position.x = 15  # x
-        self.wp_global_all[0].pose.position.y = -7  # y
+        self.wp_global_all[0].pose.position.x = 9  # x
+        self.wp_global_all[0].pose.position.y = 12  # y
         self.wp_global_all[0].pose.position.z = .5  # z, default is 10
 
-        self.wp_global_all[1].pose.position.x = 9  # x
-        self.wp_global_all[1].pose.position.y = -1  # y
-        self.wp_global_all[1].pose.position.z = .5  # z, default is 10
-
-        self.wp_global_all[2].pose.position.x = 25  # x
-        self.wp_global_all[2].pose.position.y = 0  # y
-        self.wp_global_all[2].pose.position.z = .5  # z, default is 10
+        # self.wp_global_all[1].pose.position.x = 9  # x
+        # self.wp_global_all[1].pose.position.y = -1  # y
+        # self.wp_global_all[1].pose.position.z = .5  # z, default is 10
+        #
+        # self.wp_global_all[2].pose.position.x = 25  # x
+        # self.wp_global_all[2].pose.position.y = 0  # y
+        # self.wp_global_all[2].pose.position.z = .5  # z, default is 10
 
         self.wp_local_current = None
+        self.finished = False  # Indicate if final point is reached
 
         self.tol_wp_local = rospy.get_param('tol_wp_local', .1)  # Absolute tolerance to set WAYPOINT_ACHIEVED to
         # True when L2-Distance between UAV and local waypoint is less or equal
         self.tol_wp_global = rospy.get_param('tol_wp_global', .1)  # Same as above but for gloabl waypoint
 
+        # --- RATES --- #
         self._rate_publish_wp = rospy.Rate(20)
-        self._rate_check_reached_global_wp = rospy.Rate(10)
+        self._rate_check_reached_global_wp = rospy.Rate(20)
 
+        # --- THREADS --- #
         # Thread for takeoff waypoint publishing
         self._thread_takeoff_waypoint = None  # type: threading.Thread
 
@@ -53,10 +56,16 @@ class GlobalPath(object):
         self._thread_keep_armed_offboard = threading.Thread(target=self._keep_armed_and_offboard)
         self._thread_keep_armed_offboard.daemon = True
 
+        # Thread to log waypoints. Maybe put into a seperate node?
+        self._thread_position_logger = threading.Thread(target=self.log_path)
+        self._thread_position_logger.daemon = False
+
+        # --- PUBLISHERS --- #
         self._pub_wp_takeoff = rospy.Publisher("/mavros/setpoint_raw/local", PositionTarget, queue_size=1)
         self._pub_wp_local = rospy.Publisher("/mavros/setpoint_raw/local", PositionTarget, queue_size=1)
         self._pub_wp_global_current = rospy.Publisher("wp_global_current", PoseStamped, queue_size=1)
 
+        # --- SUBSCRIBERS --- #
         rospy.Subscriber('/mavros/local_position/pose', PoseStamped, self._callback_pose)
         rospy.Subscriber("/mavros/state", State, self._callback_current_state)
         rospy.Subscriber("wp_local_current", PositionTarget, self._callback_waypoint_local_current)
@@ -179,6 +188,30 @@ class GlobalPath(object):
                               pose_2.position.z])
             return all(np.isclose(pos_1, pos_2, atol=atol))
 
+    def log_path(self):
+        from datetime import datetime
+        import pickle
+
+        uav_path = np.zeros((1000, 3))
+        now = datetime.now()
+        file_path = '/home/daniel/catkin_ws/src/path_planning_private/src/py_uav_path_planning/path_planning/path_logs/' \
+                    + 'path_log_' + now.strftime("%d_%m_%Y_%H_%M_%S")
+        file_log = open(file_path, 'wb')
+        i = 0
+
+        rospy.loginfo(self.name + ': Position log started')
+        while not self.finished:
+            uav_path[i] = (self.uav_pose.pose.position.x, self.uav_pose.pose.position.y, self.uav_pose.pose.position.z)
+            if i == uav_path.shape[0] - 1:
+                uav_path = np.concatenate((uav_path, np.zeros(uav_path.shape)), axis=0)
+            i += 1
+            self._rate_publish_wp.sleep()
+
+        uav_path = uav_path[:i]
+        pickle.dump(uav_path, file_log, protocol=pickle.HIGHEST_PROTOCOL)
+        rospy.loginfo(self.name + ': Position log written')
+        return
+
     def start(self):
         """main function of GlobalPathPlanner"""
 
@@ -199,8 +232,9 @@ class GlobalPath(object):
         takeoff_success = False
         self._takeoff_procedure()
         rospy.sleep(1)  # To prevent that takeoff goes directly into path following
-        rospy.loginfo('Takeoff procedure finished')
+        rospy.loginfo(self.name + ': Takeoff procedure finished')
 
+        self._thread_position_logger.start()
         for wp_global in self.wp_global_all:  # Iterates over all global waypoints
             rospy.loginfo(self.name + ': Published new global waypoint')
             self._publish_waypoint_global_current(wp_global)
@@ -221,6 +255,7 @@ class GlobalPath(object):
                 self._rate_publish_wp.sleep()
             rospy.loginfo(self.name + ': Reached previous global waypoint')
 
-        rospy.loginfo('Reached final global waypoint')
-        rospy.spin()
+        self.finished = True
+        rospy.loginfo(self.name + ': Reached final global waypoint')
+        rospy.sleep(10)
         return

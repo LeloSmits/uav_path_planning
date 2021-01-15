@@ -18,7 +18,7 @@ class ObstacleSensor(object):
         self.name = 'obstacle_sensor'
         rospy.init_node(self.name)
 
-        self.loop_rate = rospy.Rate(10)
+        self.loop_rate = rospy.Rate(100)
         self.all_obstacles = list()  # type: obstacleListMsg
         self.active_obstacles = list()  # type: obstacleListMsg
         self.uav_pose = None
@@ -92,19 +92,8 @@ class ObstacleSensor(object):
         """Publisher Function that publishes self.active_obstacles in the ObstacleListMsg format
             to ~/active_obstacles."""
         self.pub_obstacle_list.publish(self.active_obstacles)
-        rospy.loginfo(self.name + ": Published active obstacles")
+        # rospy.loginfo(self.name + ": Published active obstacles")
         return
-
-    # def _pub_active_obstacles(self):
-    #     """Publisher Function that publishes self.active_obstacles in the ObstacleListMsg format
-    #     to ~/active_obstacles."""
-    #     msg = obstacleListMsg()
-    #     for obstacle_i in self.active_obstacles:
-    #         msg.obstacleList.append(obstacle_i.to_rosmsg())
-    #     print(msg)
-    #     self.pub_obstacle_list.publish(msg)
-    #     rospy.loginfo(self.name + ": Published active obstacles")
-    #     return
 
     def start(self):
         """main function of ObstaclesSensor. First reads all obstacles from the xml file, then publishes all obstacles
