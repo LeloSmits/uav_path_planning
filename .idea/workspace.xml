@@ -5,26 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="2b69f1ab-9d54-4496-8af0-1eef0c768d44" name="Default Changelist" comment="Coole Änderungen 1.0">
-      <change afterPath="$PROJECT_DIR$/examples/gazebo_worlds/gazebo_Corners.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/launch/path_planner_yaw_test.launch" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/py_uav_path_planning/path_planning/path_logs/path_log_12_01_2021_15_03_53" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/py_uav_path_planning/path_planning/path_logs/path_log_12_01_2021_15_15_42" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/py_uav_path_planning/path_planning/path_logs/path_log_12_01_2021_15_32_18" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/py_uav_path_planning/path_planning/path_logs/path_log_14_01_2021_18_54_31" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/py_uav_path_planning/path_planning/path_logs/path_log_14_01_2021_18_56_38" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/py_uav_path_planning/path_planning/path_logs/path_log_14_01_2021_19_00_00" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/py_uav_path_planning/path_planning/path_logs/path_log_14_01_2021_19_20_54" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/py_uav_path_planning/path_planning/path_logs/path_log_14_01_2021_19_32_57" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/py_uav_path_planning/path_planning/path_logs/path_log_14_01_2021_19_35_33" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/py_uav_path_planning/path_planning/path_logs/path_log_14_01_2021_19_39_42" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/py_uav_path_planning/path_planning/path_logs/path_log_14_01_2021_19_42_48" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/py_uav_path_planning/path_planning/path_logs/path_log_14_01_2021_19_44_38" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/py_uav_path_planning/obstacle_map/obstacle_map.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/py_uav_path_planning/obstacle_map/obstacle_map.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/py_uav_path_planning/obstacle_sensor/obstacle_sensor.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/py_uav_path_planning/obstacle_sensor/obstacle_sensor.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/py_uav_path_planning/path_planning/global_path.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/py_uav_path_planning/path_planning/global_path.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/py_uav_path_planning/path_planning/local_path_planning.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/py_uav_path_planning/path_planning/local_path_planning.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/py_uav_path_planning/path_planning/potentialfield.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/py_uav_path_planning/path_planning/potentialfield.py" afterDir="false" />
     </list>
     <list id="56129878-e329-44c7-8054-745bd1d46105" name="Example Folder" comment="Created Example folder for the gazebo worlds and other stuff " />
     <list id="b71ee3ab-dd20-4e73-a8c1-7d0e4b813f8c" name="New folder Node" comment="Put all node files in here that are called with &quot;rosrun path_planning_private node123&quot;" />
@@ -329,7 +312,8 @@
     <MESSAGE value="Piendl-Branch Erste Version" />
     <MESSAGE value="Added a global path node, launch file, local path planner, example world" />
     <MESSAGE value="Example world" />
-    <option name="LAST_COMMIT_MESSAGE" value="Example world" />
+    <MESSAGE value="Coole Änderungen 2.0" />
+    <option name="LAST_COMMIT_MESSAGE" value="Coole Änderungen 2.0" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
