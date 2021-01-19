@@ -1,5 +1,6 @@
 numpy~=1.16.6
 matplotlib
+pandas
 scipy~=1.2.3
 typing~=3.7.4.3
 tf~=1.0.0
