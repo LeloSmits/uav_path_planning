@@ -1,0 +1,1 @@
+onedimarray[] data
