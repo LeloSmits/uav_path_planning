@@ -8,8 +8,8 @@ from helper import attractive_potential_function, obstacle_potential_function
 
 
 # ToDo: Maybe write functions as service calls
-kr = 10
-rho0 = 10
+kr = 20
+rho0 = 3
 ka = 2
 
 
@@ -23,15 +23,20 @@ def get_potential_field(uav_coordinate, goal_coordinate, obstacle_map):
 
     for obstacle_i in obstacle_map:
         potential += obstacle_potential_function(uav_coordinate, obstacle_i.pose[:3], kr=kr, rho0=rho0)
-    potential += attractive_potential_function(uav_coordinate, goal_coordinate, ka=ka)
+
+    if goal_coordinate is not None:
+        potential += attractive_potential_function(uav_coordinate, goal_coordinate, ka=ka)
     return potential
 
 
 def get_vector_field(uav_coordinate, goal_coordinate, obstacle_map):
-    # type: (np.array, np.array, typing.List[obstacleMsg]) -> typing.Union[float, np.array]
+    # type: (np.array, np.array, typing.List[obstacleMsg]) -> np.ndarray
     vector = np.zeros(uav_coordinate.shape)
 
     for obstacle_i in obstacle_map:
         vector += obstacle_potential_function(uav_coordinate, obstacle_i.pose[:3], kr=kr, rho0=rho0, der=True)
-    vector += attractive_potential_function(uav_coordinate, goal_coordinate, ka=ka, der=True)
+
+    if goal_coordinate is not None:
+        vector += attractive_potential_function(uav_coordinate, goal_coordinate, ka=ka, der=True)
+
     return vector

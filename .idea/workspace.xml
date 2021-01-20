@@ -4,10 +4,26 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2b69f1ab-9d54-4496-8af0-1eef0c768d44" name="Default Changelist" comment="Coole Änderungen 1.0">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+    <list default="true" id="2b69f1ab-9d54-4496-8af0-1eef0c768d44" name="Default Changelist" comment="Examples for potential service">
+      <change afterPath="$PROJECT_DIR$/examples/gazebo_worlds/gazebo_local_minima_1.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/examples/gazebo_worlds/gazebo_local_minima_2.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/examples/gazebo_worlds/gazebo_local_minima_3.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/launch/path_planner_local_minima_1.launch" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/launch/path_planner_local_minima_2.launch" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/launch/path_planner_local_minima_3.launch" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/py_uav_path_planning/extras/__init__.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/launch/path_planner_yaw_test.launch" beforeDir="false" afterPath="$PROJECT_DIR$/launch/path_planner_yaw_test.launch" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/py_uav_path_planning/obstacle_map/obstacle_map.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/py_uav_path_planning/obstacle_map/obstacle_map.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/py_uav_path_planning/obstacle_sensor/helper/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/py_uav_path_planning/obstacle_sensor/helper/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/py_uav_path_planning/obstacle_sensor/helper/read_gazebo_xml.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/py_uav_path_planning/obstacle_sensor/helper/read_gazebo_xml.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/py_uav_path_planning/obstacle_sensor/obstacle_sensor.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/py_uav_path_planning/obstacle_sensor/obstacle_sensor.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/py_uav_path_planning/path_planning/global_path.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/py_uav_path_planning/path_planning/global_path.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/py_uav_path_planning/path_planning/helper/potential_functions.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/py_uav_path_planning/path_planning/helper/potential_functions.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/py_uav_path_planning/path_planning/local_path_planning.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/py_uav_path_planning/path_planning/local_path_planning.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/py_uav_path_planning/path_planning/potentialfield.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/py_uav_path_planning/path_planning/potentialfield.py" afterDir="false" />
     </list>
     <list id="56129878-e329-44c7-8054-745bd1d46105" name="Example Folder" comment="Created Example folder for the gazebo worlds and other stuff " />
     <list id="b71ee3ab-dd20-4e73-a8c1-7d0e4b813f8c" name="New folder Node" comment="Put all node files in here that are called with &quot;rosrun path_planning_private node123&quot;" />
@@ -42,6 +58,9 @@
       <filtered-out-file-type name="COMMIT_BY_MESSAGE" />
     </file-type-list>
   </component>
+  <component name="ProblemsViewState">
+    <option name="selectedIndex" value="1" />
+  </component>
   <component name="ProjectId" id="1mNwvxjrLoZ9N8B0OWluN7VP8Z1" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true">
     <ConfirmationsSetting value="2" id="Add" />
@@ -64,7 +83,7 @@
     <property name="node.js.selected.package.tslint" value="(autodetect)" />
     <property name="restartRequiresConfirmation" value="false" />
     <property name="run.code.analysis.last.selected.profile" value="pProject Default" />
-    <property name="settings.editor.selected.configurable" value="project.propVCSSupport.Mappings" />
+    <property name="settings.editor.selected.configurable" value="preferences.keymap" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
@@ -210,6 +229,10 @@
       <workItem from="1610641312263" duration="3964000" />
       <workItem from="1610648378863" duration="1439000" />
       <workItem from="1610700014707" duration="597000" />
+      <workItem from="1610796307748" duration="780000" />
+      <workItem from="1610797104891" duration="21691000" />
+      <workItem from="1610992271288" duration="1063000" />
+      <workItem from="1611132552715" duration="8128000" />
     </task>
     <task id="LOCAL-00001" summary="Created example folder">
       <created>1609542928670</created>
@@ -281,7 +304,21 @@
       <option name="project" value="LOCAL" />
       <updated>1610106934195</updated>
     </task>
-    <option name="localTasksCounter" value="11" />
+    <task id="LOCAL-00011" summary="Merge von Leo">
+      <created>1610702405708</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1610702405708</updated>
+    </task>
+    <task id="LOCAL-00012" summary="Examples for potential service">
+      <created>1610724048889</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1610724048889</updated>
+    </task>
+    <option name="localTasksCounter" value="13" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -313,7 +350,9 @@
     <MESSAGE value="Added a global path node, launch file, local path planner, example world" />
     <MESSAGE value="Example world" />
     <MESSAGE value="Coole Änderungen 2.0" />
-    <option name="LAST_COMMIT_MESSAGE" value="Coole Änderungen 2.0" />
+    <MESSAGE value="Merge von Leo" />
+    <MESSAGE value="Examples for potential service" />
+    <option name="LAST_COMMIT_MESSAGE" value="Examples for potential service" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

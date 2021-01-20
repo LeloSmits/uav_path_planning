@@ -42,13 +42,13 @@ def obstacle_potential_function(X, Xobs, kr, rho0, der=False):
         dist = np.linalg.norm(X - Xobs)
         if not der:
             if not np.isclose(dist, 0, atol=close_to_zero_tol):
-                return (dist < rho0 ** 2) * (.5 * kr * (1 / dist - 1 / rho0) ** 2)  # Set to 0 if distance larger than influence
+                return (dist < rho0) * (.5 * kr * (1 / dist - 1 / rho0) ** 2)  # Set to 0 if distance larger than influence
             else:
                 return np.inf
         else:
             if not np.isclose(dist, 0, atol=close_to_zero_tol):
                 res = -kr * 1 / dist ** 3 * (1 / dist - 1 / rho0) * (X - Xobs)
-                return res * (dist < rho0**2)
+                return res * (dist < rho0)
             else:
                 return np.full(X.shape, np.inf)
 

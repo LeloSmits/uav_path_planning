@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.0.2)
 project(uav_path_planning)
 
-find_package(catkin REQUIRED COMPONENTS roscpp geometry_msgs mavros_msgs octomap_msgs std_msgs message_generation)
+find_package(catkin REQUIRED COMPONENTS rospy roscpp geometry_msgs mavros_msgs std_msgs message_generation)
 
 catkin_python_setup()
 
@@ -10,6 +10,14 @@ add_message_files(
     FILES
     obstacleListMsg.msg
     obstacleMsg.msg
+    ThreeDimPos.msg
+    ArrayThreeDimPos.msg
+    ArrayPotentials.msg
+)
+
+add_service_files(
+    FILES
+    PotentialService.srv
 )
 
 ## Generate added messages and services with any dependencies listed here
@@ -29,6 +37,8 @@ install(
     nodes/local_path_planner_node
     nodes/global_path_node
     scripts/mavros_path_planning_test.py
+    src/py_uav_path_planning/extras/test_client.py
+    src/py_uav_path_planning/extras/test_server.py
     DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
     )
 

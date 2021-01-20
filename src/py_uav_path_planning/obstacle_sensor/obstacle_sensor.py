@@ -70,8 +70,9 @@ class ObstacleSensor(object):
         by self.range and self.angle. If true, they are added to self.active_obstacles."""
         self.active_obstacles = obstacleListMsg()
         for obstacle_i in self.all_obstacles:
+            angle = self.get_angle_uav_obstacles(obstacle_i)
             if self.get_distance_uav_obstacle(obstacle_i) <= self.range and \
-                    (self.get_angle_uav_obstacles(obstacle_i) <= self.angle or 360 - self.angle <= self.get_angle_uav_obstacles(obstacle_i) <= 360):
+                    (angle <= self.angle or 360 - self.angle <= angle <= 360):
                 self.active_obstacles.obstacleList.append(obstacle_i)
         return
 
@@ -92,7 +93,7 @@ class ObstacleSensor(object):
         """main function of ObstaclesSensor. First reads all obstacles from the xml file, then publishes all obstacles
         that are within range of the uav."""
 
-        rospy.loginfo("obstacle_sensor: Node started")
+        rospy.loginfo(self.name + ": Node started")
 
         while not rospy.has_param("path_to_gazebo_xml"):
             rospy.loginfo(self.name + ": Param path_to_gazebo_xml is not set, waiting.")

@@ -6,6 +6,7 @@ import numpy as np
 from obstacle import Obstacle
 
 
+# ToDo: Use obstacleMsg instead of Obstacle
 def read_gazebo_xml(filename, obstacle_prefix='obs_'):
     # obstacle_prefix = 'obs_'
 

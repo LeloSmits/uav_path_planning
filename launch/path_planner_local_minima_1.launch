@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <launch>
     <group ns="path_planning">
-        <param name="path_to_gazebo_xml" value="/home/daniel/catkin_ws/src/path_planning_private/examples/gazebo_worlds/gazebo_Corners.xml" />
+        <param name="path_to_gazebo_xml" value="/home/daniel/catkin_ws/src/path_planning_private/examples/gazebo_worlds/gazebo_local_minima_1.xml" />
         <param name="tol_wp_reached" value="0.1" />
         <param name="tol_wp_takeoff" value="0.1" />
         <param name="threshold_wp_position_control" value="1" />
@@ -31,7 +31,7 @@
 
     <!-- MAVROS, PX4 SITL and Gazebo -->
     <include file="$(find px4)/launch/mavros_posix_sitl.launch">
-        <arg name="world" value="/home/daniel/catkin_ws/src/path_planning_private/examples/gazebo_worlds/gazebo_Corners.xml"/>
+        <arg name="world" value="/home/daniel/catkin_ws/src/path_planning_private/examples/gazebo_worlds/gazebo_local_minima_1.xml"/>
     </include>
 
 </launch>

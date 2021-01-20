@@ -1,6 +1,5 @@
 #!/usr/bin/env python2
 
-import math
 import numpy as np
 import rospy
 import typing
