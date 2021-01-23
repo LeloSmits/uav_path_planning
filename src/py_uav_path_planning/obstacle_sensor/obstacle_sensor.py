@@ -95,7 +95,7 @@ class ObstacleSensor(object):
 
         rospy.loginfo(self.name + ": Node started")
 
-        while not rospy.has_param("path_to_gazebo_xml"):
+        while not rospy.has_param("path_to_gazebo_xml") and not rospy.is_shutdown():
             rospy.loginfo(self.name + ": Param path_to_gazebo_xml is not set, waiting.")
             rospy.sleep(.1)
         filepath = rospy.get_param("path_to_gazebo_xml")

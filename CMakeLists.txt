@@ -10,8 +10,6 @@ add_message_files(
     FILES
     obstacleListMsg.msg
     obstacleMsg.msg
-    onedimarray.msg
-    twodimarray.msg
     MultiArray.msg
 )
 

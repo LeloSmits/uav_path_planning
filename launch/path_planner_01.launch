@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <launch>
     <group ns="path_planning">
-        <param name="path_to_gazebo_xml" value="/home/leonard/catkin_ws/src/path_planning_private/examples/gazebo_worlds/gazebo_BunchOfBoxes.xml" />
+        <param name="path_to_gazebo_xml" value="/home/daniel/catkin_ws/src/path_planning_private/examples/gazebo_worlds/gazebo_BunchOfBoxes.xml" />
         <param name="tol_wp_local" value=".5" />
         <param name="tol_wp_global" value=".1" />
         <param name="takeoff_altitude" value="0.8" />
@@ -30,7 +30,7 @@
 
     <!-- MAVROS, PX4 SITL and Gazebo -->
     <include file="$(find px4)/launch/mavros_posix_sitl.launch">
-        <arg name="world" value="/home/leonard/catkin_ws/src/path_planning_private/examples/gazebo_worlds/gazebo_BunchOfBoxes.xml"/>
+        <arg name="world" value="/home/daniel/catkin_ws/src/path_planning_private/examples/gazebo_worlds/gazebo_BunchOfBoxes.xml"/>
     </include>
 
 </launch>
