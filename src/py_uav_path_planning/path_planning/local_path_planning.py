@@ -14,7 +14,7 @@ from std_msgs.msg import Header
 from mavros_msgs.msg import PositionTarget, Waypoint, WaypointList
 
 from uav_path_planning.msg import obstacleMsg, obstacleListMsg
-from uav_path_planning.srv import potential_field_msg
+from uav_path_planning.srv import potential_field_msg, potential_field_msgRequest
 
 # from potentialfield import get_potential_field, get_vector_field
 
@@ -208,15 +208,15 @@ class LocalPathPlanner(object):
 
         step_size = self.step_size
         for i in range(self.max_iter_per_wp):
-            gradient_srv_req = potential_field_msg()
+            gradient_srv_req = potential_field_msgRequest()
             # ToDo if error: Maybe needs to be transformed to list
             gradient_srv_req.req.data = self.__get_uav_position()
             gradient_srv_req.mode = 0
             gradient_srv_resp = self.client_apf_gradient(gradient_srv_req)
+
             gradient = deseralize_coordinates(gradient_srv_resp.resp.data, 3)
 
-            # ToDo if error: Maybe needs to access the first element explicitly: potential_new[0]
-            direction = -gradient  # Subtraction because we want to descent / move to smaller potential
+            direction = -gradient[0]  # Subtraction because we want to descent / move to smaller potential
             direction[2] = 0
 
             # ToDo: handle direction_length close to 0
@@ -245,21 +245,24 @@ class LocalPathPlanner(object):
                 break
 
             elif ctrl == 'position':
-                potential_srv_req = potential_field_msg()
+                potential_srv_req = potential_field_msgRequest()
                 potential_srv_req.mode = 0
                 potential_srv_req.req.data = uav_pos  # ToDo if error: Maybe needs to be transformed to list
 
                 potential_srv_resp = self.client_apf_potential(potential_srv_req)
-                potential_here = deseralize_coordinates(potential_srv_resp.resp.data, 3)
+                potential_here = potential_srv_resp.resp.data
 
                 # ToDo: handle direction_length close to 0
+                # if np.linalg.norm(direction) > 1:
+                #     direction = direction / np.linalg.norm(direction)
+                rospy.loginfo(direction)
                 uav_pos_new = uav_pos + step_size * direction  # / direction_length
 
-                potential_srv_req = potential_field_msg()
+                potential_srv_req = potential_field_msgRequest()
                 potential_srv_req.mode = 0
                 potential_srv_req.req.data = uav_pos_new  # ToDo if error: Maybe needs to be transformed to list
                 potential_srv_resp = self.client_apf_potential(potential_srv_req)
-                potential_new = deseralize_coordinates(potential_srv_resp.resp.data, 3)
+                potential_new = potential_srv_resp.resp.data
 
                 # ToDo if error: Maybe needs to access the first element explicitly: potential_new[0]
                 if potential_new > potential_here:
@@ -658,15 +661,16 @@ class LocalPathPlanner(object):
                 rospy.loginfo(self.name + ": UAV Pose received")
                 break
 
+        rospy.loginfo(self.name + ": Waiting for global waypoints")
         while (self.waypoint_global_next is None or self.waypoint_global_previous is None) \
                 and not rospy.is_shutdown():
-            rospy.loginfo(self.name + ": Waiting for global waypoints")
             self._rate_publish.sleep()
         rospy.loginfo(self.name + ": Global waypoints received")
 
         # Wait for services
         rospy.wait_for_service('get_apf_potential')
         rospy.wait_for_service('get_apf_gradient')
+        rospy.loginfo(self.name + ': Services online')
 
         rospy.loginfo(self.name + ': Starting local path planning')
         self.master()
