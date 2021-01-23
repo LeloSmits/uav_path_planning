@@ -14,24 +14,26 @@ import pandas as pd
 from uav_path_planning.msg import obstacleListMsg
 from mavros_msgs.msg import Waypoint
 from uav_path_planning.srv import potential_field_msg, potential_field_msgResponse
+from helper import read_gazebo_xml
 
 
 class ArtificialPotentialField:
 
-    def __init__(self):
+    def __init__(self, filepath):
         self.name = 'APF'
         self.potential = list()
         self.gradient = list()
-        self.previous_waypoint = np.array([0, 0, 0.5])        # ToDo adjust these or set these to None
-        self.next_waypoint = np.array([25, 0, 0.5])           # ToDo adjust these or set these to None
-        self.df = pd.read_csv("/home/leonard/catkin_ws/src/path_planning_private/src/py_uav_path_planning/path_planning/Classification.csv")
-        rospy.Subscriber('path_planning/obstacle_map', obstacleListMsg, self._obstacle_list_callback)
-        rospy.Subscriber('path_planning/waypoint_global_previous', Waypoint, self._previous_waypoint_callback)
-        rospy.Subscriber('path_planning/waypoint_global_next', Waypoint, self._next_waypoint_callback)
-        # while self.next_waypoint is None:
-        #     rospy.sleep(.5)
+        self.previous_waypoint = None     # ToDo adjust these or set these to None
+        self.next_waypoint = None        # ToDo adjust these or set these to None
+        self.df = pd.read_csv(filepath)
+        rospy.Subscriber('obstacle_map', obstacleListMsg, self._obstacle_list_callback)
+        rospy.Subscriber('waypoint_global_previous', Waypoint, self._previous_waypoint_callback)
+        rospy.Subscriber('waypoint_global_next', Waypoint, self._next_waypoint_callback)
+        while not self.next_waypoint:
+            rospy.sleep(.5)
         # Service Call to get the potential of different points
         rospy.Service('get_apf_potential', potential_field_msg, self._potential_callback)
+        # Service Call to get the gradient of different points
         rospy.Service('get_apf_gradient', potential_field_msg, self._gradient_callback)
 
     def _obstacle_list_callback(self, data):
@@ -143,7 +145,7 @@ class ArtificialPotentialField:
         z_vector = pot_coordinates[2]
         # print(z_vector)
         # z_vector = np.ma.array(z_vector, mask=(z_vector == 0.5))        # Mask array to avoid runtime warning
-        potential = potential + 1/(z_vector - 0.49)
+        potential = potential + 1/(z_vector - 0.5)
         # print(potential)
 
         # Define the message
@@ -258,9 +260,9 @@ class ArtificialPotentialField:
             # gradient[2] = (kb*(help_vector[1]*term_1-help_vector[0]*term_2))/(np.linalg.norm(np.cross(help_vector, line_vector), axis=1)*np.linalg.norm(help_vector))
 
         # Calculate the gradient to ensure the minimum flight height
-        gradient[2] = gradient[2] - 1/((pot_coordinates[2]-0.49)**2)
+        gradient[2] = gradient[2] - 1/((pot_coordinates[2]-0.5)**2)
 
-        print(gradient)
+        # print(gradient)
         # Define the message
         grad_list = gradient[0].astype(np.float32).tolist()
         grad_list.extend(gradient[1].astype(np.float32).tolist())
@@ -311,8 +313,13 @@ class Obstacle:
 
 
 if __name__ == "__main__":
+    rospy.loginfo("Node started")
+    while not rospy.has_param("path_to_classifier_csv"):
+        rospy.loginfo("Param path_to_classifier_csv is not set, waiting.")
+        rospy.sleep(.1)
+    filepath = rospy.get_param("path_to_classifier_csv")
     rospy.init_node('calc_apf')
-    ArtificialPotentialField()
+    ArtificialPotentialField(filepath=filepath)
     rospy.spin()
 
 
