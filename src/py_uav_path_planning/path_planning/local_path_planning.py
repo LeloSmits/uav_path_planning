@@ -7,14 +7,16 @@ import typing
 from threading import Thread
 import threading
 
+from tf.transformations import euler_from_quaternion
+
 from geometry_msgs.msg import PoseStamped, Pose
-from uav_path_planning.msg import obstacleMsg, obstacleListMsg
 from std_msgs.msg import Header
 from mavros_msgs.msg import PositionTarget, Waypoint, WaypointList
 
-from tf.transformations import euler_from_quaternion
+from uav_path_planning.msg import obstacleMsg, obstacleListMsg
+from uav_path_planning.srv import potential_field_msg
 
-from potentialfield import get_potential_field, get_vector_field
+# from potentialfield import get_potential_field, get_vector_field
 
 
 class LocalPathPlanner(object):
@@ -42,7 +44,6 @@ class LocalPathPlanner(object):
         else:
             rospy.loginfo(self.name + ": Local Minima Mode NOT activated")
 
-
         self.mode_0_1_angle_threshold = 5.  # degrees
         self.mode_0_1_limit = 1.
         self.mode_1_2_time_limit = 5  # secs
@@ -59,6 +60,9 @@ class LocalPathPlanner(object):
         rospy.Subscriber('obstacle_map', obstacleListMsg, self._callback_map)
         rospy.Subscriber('waypoint_global_next', Waypoint, self._callback_waypoint_global_current)
         rospy.Subscriber('waypoint_global_previous', Waypoint, self._callback_waypoint_global_previous)
+
+        self.client_apf_potential = rospy.ServiceProxy('get_apf_potential', potential_field_msg)
+        self.client_apf_gradient = rospy.ServiceProxy('get_apf_gradient', potential_field_msg)
 
         self._pub_setpoint = rospy.Publisher("local_setpoint", PositionTarget, queue_size=1)
         self._thread_publish_setpoint = Thread(target=self._publish_setpoint, args=())
@@ -204,8 +208,14 @@ class LocalPathPlanner(object):
 
         step_size = self.step_size
         for i in range(self.max_iter_per_wp):
-            gradient = get_vector_field(uav_coordinate=self.__get_uav_position(), goal_coordinate=goal_pos,
-                                        obstacle_map=self._map)
+            gradient_srv_req = potential_field_msg()
+            # ToDo if error: Maybe needs to be transformed to list
+            gradient_srv_req.req.data = self.__get_uav_position()
+            gradient_srv_req.mode = 0
+            gradient_srv_resp = self.client_apf_gradient(gradient_srv_req)
+            gradient = deseralize_coordinates(gradient_srv_resp.resp.data, 3)
+
+            # ToDo if error: Maybe needs to access the first element explicitly: potential_new[0]
             direction = -gradient  # Subtraction because we want to descent / move to smaller potential
             direction[2] = 0
 
@@ -226,19 +236,32 @@ class LocalPathPlanner(object):
                 setpoint.header = Header()
                 setpoint.header.stamp = rospy.Time.now()
 
-                velocity = direction ** 2 * self.speed_multiplier  # / direction_length  # ToDo: direction_length, see above
+                # ToDo: handle direction_length close to 0
+                velocity = direction ** 2 * self.speed_multiplier  # / direction_length
+
                 setpoint.velocity.x = velocity[0]
                 setpoint.velocity.y = velocity[1]
                 setpoint.position.z = self.waypoint_global_next.z_alt  # ToDo: make 3D
                 break
 
             elif ctrl == 'position':
-                potential_here = get_potential_field(uav_coordinate=uav_pos, goal_coordinate=goal_pos,
-                                                     obstacle_map=self._map)
+                potential_srv_req = potential_field_msg()
+                potential_srv_req.mode = 0
+                potential_srv_req.req.data = uav_pos  # ToDo if error: Maybe needs to be transformed to list
 
-                uav_pos_new = uav_pos + step_size * direction  # / direction_length  # ToDo: direction_length, see above
-                potential_new = get_potential_field(uav_coordinate=uav_pos_new, goal_coordinate=goal_pos,
-                                                    obstacle_map=self._map)
+                potential_srv_resp = self.client_apf_potential(potential_srv_req)
+                potential_here = deseralize_coordinates(potential_srv_resp.resp.data, 3)
+
+                # ToDo: handle direction_length close to 0
+                uav_pos_new = uav_pos + step_size * direction  # / direction_length
+
+                potential_srv_req = potential_field_msg()
+                potential_srv_req.mode = 0
+                potential_srv_req.req.data = uav_pos_new  # ToDo if error: Maybe needs to be transformed to list
+                potential_srv_resp = self.client_apf_potential(potential_srv_req)
+                potential_new = deseralize_coordinates(potential_srv_resp.resp.data, 3)
+
+                # ToDo if error: Maybe needs to access the first element explicitly: potential_new[0]
                 if potential_new > potential_here:
                     step_size /= 2
                 else:
@@ -264,190 +287,190 @@ class LocalPathPlanner(object):
 
         return setpoint
 
-    def apf_star_new_setpoint(self):
-        class APFPosition:
-            def __init__(self, parent, position, depth):
-                self.parent = parent  # type: APFPosition
-                self.children = list()  # type: typing.List[APFPosition]
-                self.position = position
-                self.depth = depth
-                self.potential = get_potential_field(position, goal_coordinate=waypoint_global_next_position,
-                                                     obstacle_map=obs_map)
-                self.gradient = get_vector_field(position, goal_coordinate=waypoint_global_next_position,
-                                                 obstacle_map=obs_map)
-                self.reached_potential = np.inf
-
-            def gradient_descent(self, save_reached_potential=True, goal_coordinate=None, obstacle_map=None,
-                                 max_iter=1000, tolerance=0.1):
-                if goal_coordinate is None:
-                    goal_coordinate = waypoint_global_next_position
-
-                if obstacle_map is None:
-                    obstacle_map = obs_map
-
-                pts_hist = np.zeros((max_iter, 3))
-                pot_hist = np.zeros(max_iter)
-
-                pts_hist[0] = self.position
-                pot_hist[0] = get_potential_field(pts_hist[0], goal_coordinate=goal_coordinate,
-                                                  obstacle_map=obstacle_map)
-
-                k = 0
-                for ii in range(max_iter - 1):
-                    step_size = descent_step
-
-                    neg_grad = -get_vector_field(pts_hist[k], goal_coordinate=goal_coordinate,
-                                                 obstacle_map=obstacle_map)
-
-                    # ToDo: New
-                    while step_size * (2 ** 11) > descent_step:
-                        new_pt = pts_hist[k] + step_size * neg_grad
-                        new_potential = get_potential_field(new_pt, goal_coordinate=goal_coordinate,
-                                                            obstacle_map=obstacle_map)
-                        if new_potential < pot_hist[k]:
-                            pts_hist[k + 1] = new_pt
-                            pot_hist[k + 1] = new_potential
-                            k += 1
-                            break
-
-                        else:
-                            step_size /= 2
-
-                    if all(np.isclose(pts_hist[k], goal_coordinate, atol=tolerance)):
-                        break
-
-                if save_reached_potential:
-                    self.reached_potential = pot_hist[k]  # save reached potential
-
-                pts_hist = pts_hist[:k + 1]
-                pot_hist = pot_hist[:k + 1]
-
-                return pts_hist, pot_hist
-
-            def expand(self):
-                if self.parent is None:
-                    vector_root_node = self.position - uav_pos
-                else:
-                    vector_root_node = self.position - self.parent.position
-                vector_root_node = vector_root_node / np.linalg.norm(vector_root_node) * radius_steps
-                position1 = self.position + vector_root_node
-                position2 = self.position + R(alpha).dot(vector_root_node)
-                position3 = self.position + R(-alpha).dot(vector_root_node)
-
-                newNode1 = APFPosition(self, position1, self.depth + 1)
-                newNode2 = APFPosition(self, position2, self.depth + 1)
-                newNode3 = APFPosition(self, position3, self.depth + 1)
-
-                # Check if new nodes reachable with apf
-                for node_i in (newNode1, newNode2, newNode3):
-                    pts, pot = self.gradient_descent(save_reached_potential=False, goal_coordinate=node_i.position, max_iter=max_iter_wp_wp, tolerance=tol_wp_local_simulated)
-                    if all(np.isclose(pts[-1], node_i.position, atol=tol_wp_local_simulated)):
-                        self.children.append(node_i)
-                return
-
-        def bfs():
-            import Queue
-            # initilalize
-            active_nodes = Queue.Queue()
-            for angle in np.linspace(uav_yaw, uav_yaw + (2 - 2 / n_pts) * np.pi, n_pts):
-                position = uav_pos + R(angle).dot(np.array([radius_steps, 0, 0]))
-                node = APFPosition(None, position, 0)
-                active_nodes.put(node)
-
-            while not active_nodes.empty():
-                node_i = active_nodes.get()
-                # Only visit a node if its potential and depth is below the upper bound
-                if node_i.potential < potential_ub \
-                        and node_i.depth <= depth_ub \
-                        and np.linalg.norm(node_i.position - uav_pos) <= max_radius:
-                    node_i.gradient_descent(save_reached_potential=True, goal_coordinate=waypoint_global_next_position,
-                                            obstacle_map=obs_map, max_iter=max_iter_wp_goal, tolerance=tol_wp_global_reached)
-                    # If the node reaches a potential below the threshold return that node
-                    if node_i.reached_potential < ((1 - potential_percentage_increase) * uav_potential
-                                                   + potential_percentage_increase * goal_potential):
-                        return node_i
-                    # If it is above the threshold, expand
-                    else:
-                        node_i.expand()
-                        for child in node_i.children:
-                            active_nodes.put(child)
-
-            return None
-
-        function_name = "Local Minima Evasion"
-
-        uav_pos = self.__get_uav_position()
-        uav_yaw = self.__get_uav_yaw()
-
-        obs_map = self._map
-        waypoint_global_next_position, waypoint_global_previous_position = self.__get_waypoint_global_position()
-        tol_wp_global_reached = self.tol_wp_global_reached
-        tol_wp_local_simulated = self.tol_wp_local_simulated
-
-        max_radius = 2 * np.linalg.norm(waypoint_global_next_position - waypoint_global_previous_position)
-
-        max_iter_wp_wp = 100
-        max_iter_wp_goal = 1000
-        depth_ub = 6
-
-        # Set the maximum allowed potential for a node to expand equal to twice the potential of the previous global
-        # waypoint. This should theoretically allow the graph to expand to a radius around the current global waypoint
-        # equal to twice the length between the previous and current global waypoint.
-        potential_ub = 4 * get_potential_field(uav_pos, goal_coordinate=self.__get_waypoint_global_position()[1],
-                                               obstacle_map=self._map)
-
-        descent_step = self.step_size  # step size for gradient descent of nodes
-        # Percentage by which the reached potential of the new node has to be better
-        potential_percentage_increase = 0.2
-        radius_steps = 1
-        n_pts = 9  # number of points for the first layer
-        n_exp = 3  # Not used. Nodes to be expanded from each node. So far only hardcoded
-        alpha = 45. / 360. * 2 * np.pi  # angle between the vector between child node to parent node
-        # and parent node - parent's parent node
-        R = lambda x: np.array([[np.cos(x), np.sin(x), 0], [-np.sin(x), np.cos(x), 0], [0, 0, 1]])  # Rotation matrix
-
-        uav_potential = get_potential_field(uav_pos, goal_coordinate=waypoint_global_next_position,
-                                            obstacle_map=self._map)
-        goal_potential = get_potential_field(waypoint_global_next_position,
-                                             goal_coordinate=waypoint_global_next_position,
-                                             obstacle_map=self._map)
-
-        result = None
-        escape_node = bfs()
-        if escape_node is None:
-            rospy.loginfo(function_name + ": UAV potential {0}".format(uav_potential))
-            rospy.loginfo(function_name + ": Goal potential {0}".format(goal_potential))
-            rospy.loginfo(function_name + ": Target unreachable")
-            # ToDo: call "not reachable"
-            pass
-        else:
-            result = WaypointList()
-            # initialize list where nodes are put
-            nodes = [None] * (escape_node.depth + 1)  # type: typing.List[APFPosition]
-            current_node = escape_node
-            # find the root node
-            i = escape_node.depth
-            while current_node is not None:
-                nodes[i] = current_node
-                current_node = current_node.parent
-                i -= 1
-            if i != -1: rospy.loginfo(function_name + ": Something went wrong")
-
-            # append all nodes from the root node to the node returned by bfs
-            for node_j in nodes:
-                wpt = Waypoint()
-                wpt.x_lat = node_j.position[0]
-                wpt.y_long = node_j.position[1]
-                wpt.z_alt = node_j.position[2]
-                result.waypoints.append(wpt)
-
-            rospy.loginfo(result)
-            rospy.loginfo(function_name + ": UAV potential {0}".format(uav_potential))
-            rospy.loginfo(function_name + ": Goal potential {0}".format(goal_potential))
-            rospy.loginfo(function_name + ": Last setpoint potential {0}".format(nodes[-1].reached_potential))
-
-        # ToDo: APF mit neuer wpts-liste starten
-        return result
+    # def apf_star_new_setpoint(self):
+    #     class APFPosition:
+    #         def __init__(self, parent, position, depth):
+    #             self.parent = parent  # type: APFPosition
+    #             self.children = list()  # type: typing.List[APFPosition]
+    #             self.position = position
+    #             self.depth = depth
+    #             self.potential = get_potential_field(position, goal_coordinate=waypoint_global_next_position,
+    #                                                  obstacle_map=obs_map)
+    #             self.gradient = get_vector_field(position, goal_coordinate=waypoint_global_next_position,
+    #                                              obstacle_map=obs_map)
+    #             self.reached_potential = np.inf
+    #
+    #         def gradient_descent(self, save_reached_potential=True, goal_coordinate=None, obstacle_map=None,
+    #                              max_iter=1000, tolerance=0.1):
+    #             if goal_coordinate is None:
+    #                 goal_coordinate = waypoint_global_next_position
+    #
+    #             if obstacle_map is None:
+    #                 obstacle_map = obs_map
+    #
+    #             pts_hist = np.zeros((max_iter, 3))
+    #             pot_hist = np.zeros(max_iter)
+    #
+    #             pts_hist[0] = self.position
+    #             pot_hist[0] = get_potential_field(pts_hist[0], goal_coordinate=goal_coordinate,
+    #                                               obstacle_map=obstacle_map)
+    #
+    #             k = 0
+    #             for ii in range(max_iter - 1):
+    #                 step_size = descent_step
+    #
+    #                 neg_grad = -get_vector_field(pts_hist[k], goal_coordinate=goal_coordinate,
+    #                                              obstacle_map=obstacle_map)
+    #
+    #                 # ToDo: New
+    #                 while step_size * (2 ** 11) > descent_step:
+    #                     new_pt = pts_hist[k] + step_size * neg_grad
+    #                     new_potential = get_potential_field(new_pt, goal_coordinate=goal_coordinate,
+    #                                                         obstacle_map=obstacle_map)
+    #                     if new_potential < pot_hist[k]:
+    #                         pts_hist[k + 1] = new_pt
+    #                         pot_hist[k + 1] = new_potential
+    #                         k += 1
+    #                         break
+    #
+    #                     else:
+    #                         step_size /= 2
+    #
+    #                 if all(np.isclose(pts_hist[k], goal_coordinate, atol=tolerance)):
+    #                     break
+    #
+    #             if save_reached_potential:
+    #                 self.reached_potential = pot_hist[k]  # save reached potential
+    #
+    #             pts_hist = pts_hist[:k + 1]
+    #             pot_hist = pot_hist[:k + 1]
+    #
+    #             return pts_hist, pot_hist
+    #
+    #         def expand(self):
+    #             if self.parent is None:
+    #                 vector_root_node = self.position - uav_pos
+    #             else:
+    #                 vector_root_node = self.position - self.parent.position
+    #             vector_root_node = vector_root_node / np.linalg.norm(vector_root_node) * radius_steps
+    #             position1 = self.position + vector_root_node
+    #             position2 = self.position + R(alpha).dot(vector_root_node)
+    #             position3 = self.position + R(-alpha).dot(vector_root_node)
+    #
+    #             newNode1 = APFPosition(self, position1, self.depth + 1)
+    #             newNode2 = APFPosition(self, position2, self.depth + 1)
+    #             newNode3 = APFPosition(self, position3, self.depth + 1)
+    #
+    #             # Check if new nodes reachable with apf
+    #             for node_i in (newNode1, newNode2, newNode3):
+    #                 pts, pot = self.gradient_descent(save_reached_potential=False, goal_coordinate=node_i.position, max_iter=max_iter_wp_wp, tolerance=tol_wp_local_simulated)
+    #                 if all(np.isclose(pts[-1], node_i.position, atol=tol_wp_local_simulated)):
+    #                     self.children.append(node_i)
+    #             return
+    #
+    #     def bfs():
+    #         import Queue
+    #         # initilalize
+    #         active_nodes = Queue.Queue()
+    #         for angle in np.linspace(uav_yaw, uav_yaw + (2 - 2 / n_pts) * np.pi, n_pts):
+    #             position = uav_pos + R(angle).dot(np.array([radius_steps, 0, 0]))
+    #             node = APFPosition(None, position, 0)
+    #             active_nodes.put(node)
+    #
+    #         while not active_nodes.empty():
+    #             node_i = active_nodes.get()
+    #             # Only visit a node if its potential and depth is below the upper bound
+    #             if node_i.potential < potential_ub \
+    #                     and node_i.depth <= depth_ub \
+    #                     and np.linalg.norm(node_i.position - uav_pos) <= max_radius:
+    #                 node_i.gradient_descent(save_reached_potential=True, goal_coordinate=waypoint_global_next_position,
+    #                                         obstacle_map=obs_map, max_iter=max_iter_wp_goal, tolerance=tol_wp_global_reached)
+    #                 # If the node reaches a potential below the threshold return that node
+    #                 if node_i.reached_potential < ((1 - potential_percentage_increase) * uav_potential
+    #                                                + potential_percentage_increase * goal_potential):
+    #                     return node_i
+    #                 # If it is above the threshold, expand
+    #                 else:
+    #                     node_i.expand()
+    #                     for child in node_i.children:
+    #                         active_nodes.put(child)
+    #
+    #         return None
+    #
+    #     function_name = "Local Minima Evasion"
+    #
+    #     uav_pos = self.__get_uav_position()
+    #     uav_yaw = self.__get_uav_yaw()
+    #
+    #     obs_map = self._map
+    #     waypoint_global_next_position, waypoint_global_previous_position = self.__get_waypoint_global_position()
+    #     tol_wp_global_reached = self.tol_wp_global_reached
+    #     tol_wp_local_simulated = self.tol_wp_local_simulated
+    #
+    #     max_radius = 2 * np.linalg.norm(waypoint_global_next_position - waypoint_global_previous_position)
+    #
+    #     max_iter_wp_wp = 100
+    #     max_iter_wp_goal = 1000
+    #     depth_ub = 6
+    #
+    #     # Set the maximum allowed potential for a node to expand equal to twice the potential of the previous global
+    #     # waypoint. This should theoretically allow the graph to expand to a radius around the current global waypoint
+    #     # equal to twice the length between the previous and current global waypoint.
+    #     potential_ub = 4 * get_potential_field(uav_pos, goal_coordinate=self.__get_waypoint_global_position()[1],
+    #                                            obstacle_map=self._map)
+    #
+    #     descent_step = self.step_size  # step size for gradient descent of nodes
+    #     # Percentage by which the reached potential of the new node has to be better
+    #     potential_percentage_increase = 0.2
+    #     radius_steps = 1
+    #     n_pts = 9  # number of points for the first layer
+    #     n_exp = 3  # Not used. Nodes to be expanded from each node. So far only hardcoded
+    #     alpha = 45. / 360. * 2 * np.pi  # angle between the vector between child node to parent node
+    #     # and parent node - parent's parent node
+    #     R = lambda x: np.array([[np.cos(x), np.sin(x), 0], [-np.sin(x), np.cos(x), 0], [0, 0, 1]])  # Rotation matrix
+    #
+    #     uav_potential = get_potential_field(uav_pos, goal_coordinate=waypoint_global_next_position,
+    #                                         obstacle_map=self._map)
+    #     goal_potential = get_potential_field(waypoint_global_next_position,
+    #                                          goal_coordinate=waypoint_global_next_position,
+    #                                          obstacle_map=self._map)
+    #
+    #     result = None
+    #     escape_node = bfs()
+    #     if escape_node is None:
+    #         rospy.loginfo(function_name + ": UAV potential {0}".format(uav_potential))
+    #         rospy.loginfo(function_name + ": Goal potential {0}".format(goal_potential))
+    #         rospy.loginfo(function_name + ": Target unreachable")
+    #         # ToDo: call "not reachable"
+    #         pass
+    #     else:
+    #         result = WaypointList()
+    #         # initialize list where nodes are put
+    #         nodes = [None] * (escape_node.depth + 1)  # type: typing.List[APFPosition]
+    #         current_node = escape_node
+    #         # find the root node
+    #         i = escape_node.depth
+    #         while current_node is not None:
+    #             nodes[i] = current_node
+    #             current_node = current_node.parent
+    #             i -= 1
+    #         if i != -1: rospy.loginfo(function_name + ": Something went wrong")
+    #
+    #         # append all nodes from the root node to the node returned by bfs
+    #         for node_j in nodes:
+    #             wpt = Waypoint()
+    #             wpt.x_lat = node_j.position[0]
+    #             wpt.y_long = node_j.position[1]
+    #             wpt.z_alt = node_j.position[2]
+    #             result.waypoints.append(wpt)
+    #
+    #         rospy.loginfo(result)
+    #         rospy.loginfo(function_name + ": UAV potential {0}".format(uav_potential))
+    #         rospy.loginfo(function_name + ": Goal potential {0}".format(goal_potential))
+    #         rospy.loginfo(function_name + ": Last setpoint potential {0}".format(nodes[-1].reached_potential))
+    #
+    #     # ToDo: APF mit neuer wpts-liste starten
+    #     return result
 
     @staticmethod
     def _speed_towards_obstacle_center(uav_pos, setpoint, obstacle):
@@ -536,70 +559,70 @@ class LocalPathPlanner(object):
             setpoint_apf = self.apf_new_setpoint(ctrl='position')
             setpoint_direct = self.direct_new_setpoint()
 
-            if self.mode_local_minima and self.uav_is_stalled:
-                rospy.loginfo(self.name + ": UAV is in a local minima. Starting APF_Star.")
-                thread_uav_progression.do_run = False
-                self.uav_is_stalled = False
-
-                # Turn UAV in a circle to get the entire environment
-                setpoint = PositionTarget()
-                setpoint.type_mask = 0b101111111000
-                setpoint.coordinate_frame = 1
-                setpoint.header = Header()
-                setpoint.header.stamp = rospy.Time.now()
-                setpoint.position.x = uav_pos[0]
-                setpoint.position.y = uav_pos[1]
-                setpoint.position.z = self.waypoint_global_next.z_alt  # ToDo: make 3D
-                rospy.loginfo(self.name + ": Scanning 360 environment")
-                for angle_i in np.linspace(uav_yaw, uav_yaw + 2 * np.pi, 30):
-                    setpoint.yaw = angle_i
-                    self.setpoint_local = copy.copy(setpoint)
-                    rospy.sleep(.1)
-
-                rospy.sleep(.5)
-
-                rospy.loginfo(self.name + ": Searching local waypoints")
-                wpts_new = self.apf_star_new_setpoint()
-
-                if wpts_new is None:
-                    rospy.loginfo(self.name + ": Target unrechable")
-                else:
-                    rospy.loginfo(self.name + ": Started publishing local waypoints")
-                    for waypoint_local in wpts_new.waypoints:
-                        rospy.loginfo(self.name + ": New local waypoint")
-                        uav_pos = self.__get_uav_position()
-
-                        direction = np.array([waypoint_local.x_lat, waypoint_local.y_long]) - uav_pos[:2]
-
-                        direction_length = np.linalg.norm(direction)
-                        setpoint = PositionTarget()
-
-                        # Deal with small step size
-                        if np.isclose(direction_length, 0):
-                            setpoint.type_mask = 0b111111111000
-                        else:
-                            setpoint.type_mask = 0b101111111000
-                            setpoint.yaw = np.arccos((direction[:2].dot(np.array([1, 0])) / direction_length))
-
-                        setpoint.coordinate_frame = 1
-                        setpoint.header = Header()
-                        setpoint.header.stamp = rospy.Time.now()
-                        setpoint.position.x = waypoint_local.x_lat
-                        setpoint.position.y = waypoint_local.y_long
-                        setpoint.position.z = self.waypoint_global_next.z_alt  # ToDo: make 3D
-                        setpoint.yaw = np.arccos((direction[:2].dot(np.array([1, 0])) / direction_length))
-
-                        # ToDo: Implement Timeout
-                        while not all(np.isclose(uav_pos[:2], (waypoint_local.x_lat, waypoint_local.y_long),
-                                                 atol=self.tol_wp_local_reached)) \
-                                and not rospy.is_shutdown():
-                            uav_pos = self.__get_uav_position()
-                            self.setpoint_local = setpoint
-                            self._rate_publish.sleep()
-
-                    rospy.loginfo(self.name + ": Reached last local waypoint")
-
-                rospy.loginfo(self.name + ": Returning to normal control")
+            # if self.mode_local_minima and self.uav_is_stalled:
+            #     rospy.loginfo(self.name + ": UAV is in a local minima. Starting APF_Star.")
+            #     thread_uav_progression.do_run = False
+            #     self.uav_is_stalled = False
+            #
+            #     # Turn UAV in a circle to get the entire environment
+            #     setpoint = PositionTarget()
+            #     setpoint.type_mask = 0b101111111000
+            #     setpoint.coordinate_frame = 1
+            #     setpoint.header = Header()
+            #     setpoint.header.stamp = rospy.Time.now()
+            #     setpoint.position.x = uav_pos[0]
+            #     setpoint.position.y = uav_pos[1]
+            #     setpoint.position.z = self.waypoint_global_next.z_alt  # ToDo: make 3D
+            #     rospy.loginfo(self.name + ": Scanning 360 environment")
+            #     for angle_i in np.linspace(uav_yaw, uav_yaw + 2 * np.pi, 30):
+            #         setpoint.yaw = angle_i
+            #         self.setpoint_local = copy.copy(setpoint)
+            #         rospy.sleep(.1)
+            #
+            #     rospy.sleep(.5)
+            #
+            #     rospy.loginfo(self.name + ": Searching local waypoints")
+            #     wpts_new = self.apf_star_new_setpoint()
+            #
+            #     if wpts_new is None:
+            #         rospy.loginfo(self.name + ": Target unrechable")
+            #     else:
+            #         rospy.loginfo(self.name + ": Started publishing local waypoints")
+            #         for waypoint_local in wpts_new.waypoints:
+            #             rospy.loginfo(self.name + ": New local waypoint")
+            #             uav_pos = self.__get_uav_position()
+            #
+            #             direction = np.array([waypoint_local.x_lat, waypoint_local.y_long]) - uav_pos[:2]
+            #
+            #             direction_length = np.linalg.norm(direction)
+            #             setpoint = PositionTarget()
+            #
+            #             # Deal with small step size
+            #             if np.isclose(direction_length, 0):
+            #                 setpoint.type_mask = 0b111111111000
+            #             else:
+            #                 setpoint.type_mask = 0b101111111000
+            #                 setpoint.yaw = np.arccos((direction[:2].dot(np.array([1, 0])) / direction_length))
+            #
+            #             setpoint.coordinate_frame = 1
+            #             setpoint.header = Header()
+            #             setpoint.header.stamp = rospy.Time.now()
+            #             setpoint.position.x = waypoint_local.x_lat
+            #             setpoint.position.y = waypoint_local.y_long
+            #             setpoint.position.z = self.waypoint_global_next.z_alt  # ToDo: make 3D
+            #             setpoint.yaw = np.arccos((direction[:2].dot(np.array([1, 0])) / direction_length))
+            #
+            #             # ToDo: Implement Timeout
+            #             while not all(np.isclose(uav_pos[:2], (waypoint_local.x_lat, waypoint_local.y_long),
+            #                                      atol=self.tol_wp_local_reached)) \
+            #                     and not rospy.is_shutdown():
+            #                 uav_pos = self.__get_uav_position()
+            #                 self.setpoint_local = setpoint
+            #                 self._rate_publish.sleep()
+            #
+            #         rospy.loginfo(self.name + ": Reached last local waypoint")
+            #
+            #     rospy.loginfo(self.name + ": Returning to normal control")
 
             # If UAV is close to global waypooint, do position setpoint control
             if all(np.isclose(uav_pos[:2], goal_coordinate[:2],
@@ -637,9 +660,33 @@ class LocalPathPlanner(object):
 
         while (self.waypoint_global_next is None or self.waypoint_global_previous is None) \
                 and not rospy.is_shutdown():
+            rospy.loginfo(self.name + ": Waiting for global waypoints")
             self._rate_publish.sleep()
+        rospy.loginfo(self.name + ": Global waypoints received")
+
+        # Wait for services
+        rospy.wait_for_service('get_apf_potential')
+        rospy.wait_for_service('get_apf_gradient')
 
         rospy.loginfo(self.name + ': Starting local path planning')
         self.master()
 
         return
+
+
+def serialize_coordinates(array_2d):
+    # type: (np.ndarray) -> np.ndarray
+    array_2d = np.asarray(array_2d)
+    array_1d = np.array(array_2d).ravel()
+    return array_1d
+
+
+def deseralize_coordinates(array_1d, n_pts):
+    # type: (np.ndarray, int) -> np.ndarray
+    array_1d = np.asarray(array_1d)
+    array_size = len(array_1d)
+    if not array_size % n_pts == 0:
+        raise Warning("Array size must be a clean multiple of n_pts. Array length: {0}, n_pts: {1}".format(array_size,
+                                                                                                           n_pts))
+    array_2d = array_1d.reshape((array_size/n_pts, n_pts))
+    return array_2d
