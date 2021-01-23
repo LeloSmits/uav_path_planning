@@ -33,7 +33,7 @@ class LocalPathPlanner(object):
 
         rospy.Subscriber('/mavros/local_position/pose', PoseStamped, self._pose_callback)
         rospy.Subscriber('obstacle_map', obstacleListMsg, self._map_callback)
-        rospy.Subscriber('wp_global_current', PoseStamped, self._wp_global_callback)
+        rospy.Subscriber('waypoint_global_next', PoseStamped, self._wp_global_callback)
 
         self._pub_new_wp = rospy.Publisher("wp_local_current", PositionTarget, queue_size=1)
         self._thread_new_wp = Thread(target=self._pub_waypoints, args=())

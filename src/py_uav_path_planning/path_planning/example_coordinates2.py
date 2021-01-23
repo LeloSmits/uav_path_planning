@@ -11,10 +11,11 @@ def add_my_coordinates(coo_list1):
 
     coordinate = potential_field_msgRequest()
     coordinate.req.data = coo_list1
+    coordinate.mode = 0
 
-    get_gradient_potential = rospy.ServiceProxy('get_apf_gradient', potential_field_msg)
+    get_apf_potential = rospy.ServiceProxy('get_apf_potential', potential_field_msg)
 
-    resp1 = get_gradient_potential(coordinate)
+    resp1 = get_apf_potential(coordinate)
 
     return resp1
     # except rospy.ServiceException as e:
@@ -23,6 +24,6 @@ def add_my_coordinates(coo_list1):
 
 if __name__ == "__main__":
     # coordinate_1 = [5, 5, 6]
-    coordinate_2 = [5.0, 5.0, 5.0, 6.0, 8.0, 9.0]
+    coordinate_2 = [3.0, 1.0, 0.5, 0.0, 0.0, 0.5]
 
     resp = add_my_coordinates(coordinate_2)

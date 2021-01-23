@@ -25,8 +25,8 @@ class GlobalPath(object):
         # self.wp_global_all = rospy.get_param('wp_global_all')  # type: typing.List[PoseStamped]
         self.wp_global_all = (PoseStamped(), )  # PoseStamped(), PoseStamped())
 
-        self.wp_global_all[0].pose.position.x = 9  # x
-        self.wp_global_all[0].pose.position.y = 12  # y
+        self.wp_global_all[0].pose.position.x = 25  # x
+        self.wp_global_all[0].pose.position.y = 0  # y
         self.wp_global_all[0].pose.position.z = .5  # z, default is 10
 
         # self.wp_global_all[1].pose.position.x = 9  # x
@@ -63,7 +63,7 @@ class GlobalPath(object):
         # --- PUBLISHERS --- #
         self._pub_wp_takeoff = rospy.Publisher("/mavros/setpoint_raw/local", PositionTarget, queue_size=1)
         self._pub_wp_local = rospy.Publisher("/mavros/setpoint_raw/local", PositionTarget, queue_size=1)
-        self._pub_wp_global_current = rospy.Publisher("wp_global_current", PoseStamped, queue_size=1)
+        self._pub_wp_global_current = rospy.Publisher("waypoint_global_next", PoseStamped, queue_size=1)
 
         # --- SUBSCRIBERS --- #
         rospy.Subscriber('/mavros/local_position/pose', PoseStamped, self._callback_pose)
@@ -258,4 +258,5 @@ class GlobalPath(object):
         self.finished = True
         rospy.loginfo(self.name + ': Reached final global waypoint')
         rospy.sleep(10)
+        rospy.spin()
         return

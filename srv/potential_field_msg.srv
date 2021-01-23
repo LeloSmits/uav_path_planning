@@ -1,3 +1,4 @@
 std_msgs/Float32MultiArray req
+int8 mode
 ---
 std_msgs/Float32MultiArray resp
