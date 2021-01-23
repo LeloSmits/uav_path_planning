@@ -25,7 +25,7 @@ class GlobalPath(object):
         # self.wp_global_all = rospy.get_param('wp_global_all')  # type: typing.List[PoseStamped]
         self.waypoint_global_all = WaypointList()
         wp_1 = Waypoint()
-        wp_1.x_lat = 12
+        wp_1.x_lat = 25
         wp_1.y_long = 0
         wp_1.z_alt = .5
         self.waypoint_global_all.waypoints.append(wp_1)

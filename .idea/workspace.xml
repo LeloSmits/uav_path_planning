@@ -4,24 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2b69f1ab-9d54-4496-8af0-1eef0c768d44" name="Default Changelist" comment="Examples for potential service">
-      <change afterPath="$PROJECT_DIR$/examples/gazebo_worlds/gazebo_local_minima_1.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/examples/gazebo_worlds/gazebo_local_minima_2.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/examples/gazebo_worlds/gazebo_local_minima_3.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/launch/path_planner_local_minima_1.launch" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/launch/path_planner_local_minima_2.launch" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/launch/path_planner_local_minima_3.launch" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/py_uav_path_planning/extras/__init__.py" afterDir="false" />
+    <list default="true" id="2b69f1ab-9d54-4496-8af0-1eef0c768d44" name="Default Changelist" comment="Updated local planner to deal with local minima. Updated global path with a better start sequence and a publisher for the previous waypoint. Updated some topic names">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/launch/path_planner_yaw_test.launch" beforeDir="false" afterPath="$PROJECT_DIR$/launch/path_planner_yaw_test.launch" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/py_uav_path_planning/obstacle_map/obstacle_map.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/py_uav_path_planning/obstacle_map/obstacle_map.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/py_uav_path_planning/obstacle_sensor/helper/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/py_uav_path_planning/obstacle_sensor/helper/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/py_uav_path_planning/obstacle_sensor/helper/read_gazebo_xml.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/py_uav_path_planning/obstacle_sensor/helper/read_gazebo_xml.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/py_uav_path_planning/obstacle_sensor/obstacle_sensor.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/py_uav_path_planning/obstacle_sensor/obstacle_sensor.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/py_uav_path_planning/path_planning/global_path.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/py_uav_path_planning/path_planning/global_path.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/py_uav_path_planning/path_planning/helper/potential_functions.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/py_uav_path_planning/path_planning/helper/potential_functions.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/py_uav_path_planning/path_planning/local_path_planning.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/py_uav_path_planning/path_planning/local_path_planning.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/py_uav_path_planning/path_planning/potentialfield.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/py_uav_path_planning/path_planning/potentialfield.py" afterDir="false" />
     </list>
@@ -45,7 +30,7 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="main" />
+        <entry key="$PROJECT_DIR$" value="meeting_20_jan_presentation" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -188,8 +173,8 @@
         <item itemvalue="Python.potentialfield" />
         <item itemvalue="Python.potential_functions" />
         <item itemvalue="Python.draw_potential_field" />
-        <item itemvalue="Python.draw_potential_field" />
         <item itemvalue="Python.potentialfield" />
+        <item itemvalue="Python.potential_functions" />
       </list>
     </recent_temporary>
   </component>
@@ -232,7 +217,8 @@
       <workItem from="1610796307748" duration="780000" />
       <workItem from="1610797104891" duration="21691000" />
       <workItem from="1610992271288" duration="1063000" />
-      <workItem from="1611132552715" duration="8128000" />
+      <workItem from="1611132552715" duration="14908000" />
+      <workItem from="1611398021465" duration="1362000" />
     </task>
     <task id="LOCAL-00001" summary="Created example folder">
       <created>1609542928670</created>
@@ -318,7 +304,14 @@
       <option name="project" value="LOCAL" />
       <updated>1610724048889</updated>
     </task>
-    <option name="localTasksCounter" value="13" />
+    <task id="LOCAL-00013" summary="Updated local planner to deal with local minima. Updated global path with a better start sequence and a publisher for the previous waypoint. Updated some topic names">
+      <created>1611150038078</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1611150038078</updated>
+    </task>
+    <option name="localTasksCounter" value="14" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -352,7 +345,8 @@
     <MESSAGE value="Coole Änderungen 2.0" />
     <MESSAGE value="Merge von Leo" />
     <MESSAGE value="Examples for potential service" />
-    <option name="LAST_COMMIT_MESSAGE" value="Examples for potential service" />
+    <MESSAGE value="Updated local planner to deal with local minima. Updated global path with a better start sequence and a publisher for the previous waypoint. Updated some topic names" />
+    <option name="LAST_COMMIT_MESSAGE" value="Updated local planner to deal with local minima. Updated global path with a better start sequence and a publisher for the previous waypoint. Updated some topic names" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

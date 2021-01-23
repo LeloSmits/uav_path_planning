@@ -8,7 +8,7 @@ from helper import attractive_potential_function, obstacle_potential_function
 
 
 # ToDo: Maybe write functions as service calls
-kr = 20
+kr = 10
 rho0 = 3
 ka = 2
 
