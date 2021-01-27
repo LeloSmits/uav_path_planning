@@ -5,7 +5,7 @@
         <param name="path_to_classifier_csv" value="/home/daniel/catkin_ws/src/path_planning_private/src/py_uav_path_planning/path_planning/Classification.csv" />
         <param name="tol_wp_local" value=".5" />
         <param name="tol_wp_global" value=".1" />
-        <param name="takeoff_altitude" value="0.8" />
+        <param name="takeoff_altitude" value="0.5" />
 <!--        <arg name="wp_global_all" value=-->
 <!--            "[header:-->
 <!--              seq: 0-->
@@ -27,7 +27,7 @@
         <node pkg="uav_path_planning" type="obstacle_map_node" name="obstacle_map_node" launch-prefix="xterm -e"/>
         <node pkg="uav_path_planning" type="local_path_planner_node" name="local_path_planner_node" launch-prefix="xterm -e"/>
         <node pkg="uav_path_planning" type="global_path_node" name="global_path_node" launch-prefix="xterm -e"/>
-        <node pkg="uav_path_planning" type="calc_apf.py" name="calc_apf" launch-prefix="xterm -e"/>
+        <node pkg="uav_path_planning" type="calc_apf.py" name="calc_apf"/>
     </group>
 
     <!-- MAVROS, PX4 SITL and Gazebo -->

@@ -23,7 +23,7 @@ class ObstacleSensor(object):
         self.active_obstacles = list()  # type: obstacleListMsg
         self.uav_pose = None
         self.range = 50
-        self.angle = 45  # Added angle to only include obstacles within field of view
+        self.angle = 360  # Added angle to only include obstacles within field of view
 
         rospy.Subscriber('/mavros/local_position/pose', PoseStamped, self._pose_callback)
         self.pub_obstacle_list = rospy.Publisher("active_obstacles", obstacleListMsg, queue_size=1)

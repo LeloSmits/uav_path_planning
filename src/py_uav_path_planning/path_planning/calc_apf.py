@@ -16,7 +16,8 @@ from mavros_msgs.msg import Waypoint
 from uav_path_planning.srv import potential_field_msg, potential_field_msgResponse
 
 ka = 2
-kb = 0.0001
+kb = 0.
+min_flight_height = -1  # ToDo: Make ROSParam
 
 
 class ArtificialPotentialField:
@@ -142,7 +143,7 @@ class ArtificialPotentialField:
         z_vector = pot_coordinates[2]
         # print(z_vector)
         # z_vector = np.ma.array(z_vector, mask=(z_vector == 0.5))        # Mask array to avoid runtime warning
-        potential = potential + 1 / (z_vector - 0.5)
+        potential = potential + 1 / (z_vector - min_flight_height)
         # print(potential)
 
         # Define the message
@@ -153,7 +154,7 @@ class ArtificialPotentialField:
 
     # return the gradient for a series of coordinates
     def _gradient_callback(self, message):
-        print(message)
+        # print(message)
         waypoint = message.req.data
         mode = message.mode
         # print(waypoint)
@@ -267,14 +268,14 @@ class ArtificialPotentialField:
 
 
         # Calculate the gradient to ensure the minimum flight height
-        gradient[2] = gradient[2] - 1 / ((pot_coordinates[2] - 0.5) ** 2)
+        gradient[2] = gradient[2] - 1 / ((pot_coordinates[2] - min_flight_height) ** 2)
 
         # print(gradient)
         # Define the message
         grad_list = gradient[0].astype(np.float32).tolist()
         grad_list.extend(gradient[1].astype(np.float32).tolist())
         grad_list.extend(gradient[2].astype(np.float32).tolist())
-        print(grad_list)
+        # print(grad_list)
         gradient_field = potential_field_msgResponse()
         gradient_field.resp.data = grad_list
         return gradient_field
@@ -329,9 +330,6 @@ class Obstacle:
                               + (z_dist ** 2) / self.c ** 2)
             return potential_test
         else:
-            rospy.loginfo("Class.: " + str(self.classification))
-            rospy.loginfo("X-Dist.: " + str(x_dist))
-            rospy.loginfo("a, b, c: " + str(self.a) + " " + str(self.b) + " " + str(self.c))
 
             x_grad = ((-1 * self.classification * x_dist) / (self.a ** 2)) / \
                      ((x_dist ** 2 / self.a ** 2 + y_dist ** 2 / self.b ** 2 + z_dist ** 2 / self.c ** 2) ** 2)

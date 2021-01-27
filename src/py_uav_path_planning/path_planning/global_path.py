@@ -25,8 +25,8 @@ class GlobalPath(object):
         # self.wp_global_all = rospy.get_param('wp_global_all')  # type: typing.List[PoseStamped]
         self.waypoint_global_all = WaypointList()
         wp_1 = Waypoint()
-        wp_1.x_lat = 25
-        wp_1.y_long = 0
+        wp_1.x_lat = 25  #  Standart: 25, LocalMinima3&4: 12
+        wp_1.y_long = 0  #  Standart: 0, LocalMinima3&4: 0
         wp_1.z_alt = .5
         self.waypoint_global_all.waypoints.append(wp_1)
 
@@ -278,9 +278,16 @@ class GlobalPath(object):
         rospy.sleep(1)  # To prevent that takeoff goes directly into path following
         rospy.loginfo(self.name + ': Takeoff procedure finished')
 
-        # self._thread_position_logger.start()
-
-        self._thread_waypoint_global.start()  # Start publishing global waypoints
+        # Start publishing global waypoints
+        uav_pose_after_takeoff = copy.copy(self.uav_pose)
+        wp_global_previous_temp = Waypoint()
+        wp_global_previous_temp.x_lat = uav_pose_after_takeoff.pose.position.x
+        wp_global_previous_temp.y_long = uav_pose_after_takeoff.pose.position.y
+        wp_global_previous_temp.z_alt = uav_pose_after_takeoff.pose.position.z
+        wp_global_previous_temp = copy.copy(wp_global_previous_temp)
+        self.waypoint_global_current = self.waypoint_global_all.waypoints[0]
+        self.waypoint_global_previous = wp_global_previous_temp
+        self._thread_waypoint_global.start()
 
         self._thread_forward_local_setpoints.start()  # Starts forwarding the setpoints from the local planner
 

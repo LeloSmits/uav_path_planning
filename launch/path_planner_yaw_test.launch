@@ -27,6 +27,7 @@
         <node pkg="uav_path_planning" type="obstacle_map_node" name="obstacle_map_node" launch-prefix="xterm -e"/>
         <node pkg="uav_path_planning" type="local_path_planner_node" name="local_path_planner_node" launch-prefix="xterm -e"/>
         <node pkg="uav_path_planning" type="global_path_node" name="global_path_node" launch-prefix="xterm -e"/>
+        <node pkg="uav_path_planning" type="calc_apf.py" name="calc_apf" launch-prefix="xterm -e"/>
     </group>
 
     <!-- MAVROS, PX4 SITL and Gazebo -->
