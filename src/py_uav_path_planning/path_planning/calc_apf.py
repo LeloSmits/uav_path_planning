@@ -15,10 +15,8 @@ from uav_path_planning.msg import obstacleListMsg
 from mavros_msgs.msg import Waypoint
 from uav_path_planning.srv import potential_field_msg, potential_field_msgResponse
 
-ka = 2
-kb = 0.
-min_flight_height = -5  # ToDo: Make ROSParam
-classification = 15
+ka = 1.0         # parameter for the attractiveness of the goal
+kb = 0.1       # parameter for the attractiveness of the trench
 
 
 class ArtificialPotentialField:
@@ -71,10 +69,11 @@ class ArtificialPotentialField:
         y_coordinate = []
         z_coordinate = []
         pot_coordinates = []
-        # ToDo
+        limit = 0.5
+
         x_factor = 1  # 10
         y_factor = 1  # 10
-        z_factor = 1  # 2*y_factor
+        z_factor = 2*y_factor
 
         for i in (range(len(waypoint) / 3)):
             x_coordinate.append(waypoint[0 + i * 3])
@@ -132,6 +131,8 @@ class ArtificialPotentialField:
             dist = np.linalg.norm(difference, axis=1)
             potential = potential + ka * dist
 
+            # Calculate distance in order to build trench potential
+
             last_point = self.previous_waypoint
             help_vector = transp_pot_coord - last_point
             line_vector = goal_point - last_point
@@ -141,10 +142,13 @@ class ArtificialPotentialField:
         # Build a z-direction potential to enforce the minimum flight height
         # Minimum flight height is 0.5m
         # print(pot_coordinates)
-        z_vector = pot_coordinates[2]
+        z_distance = np.array(pot_coordinates[2]-0.5)
         # print(z_vector)
         # z_vector = np.ma.array(z_vector, mask=(z_vector == 0.5))        # Mask array to avoid runtime warning
-        potential = potential + 1 / (z_vector - min_flight_height)
+        mask = z_distance < limit
+        temp_potential = abs(1 / z_distance)
+        temp_potential[mask] = 10**12
+        potential = temp_potential + potential
         # print(potential)
 
         # Define the message
@@ -155,7 +159,7 @@ class ArtificialPotentialField:
 
     # return the gradient for a series of coordinates
     def _gradient_callback(self, message):
-        # print(message)
+        print(message)
         waypoint = message.req.data
         mode = message.mode
         # print(waypoint)
@@ -164,9 +168,10 @@ class ArtificialPotentialField:
         y_coordinate = []
         z_coordinate = []
         pot_coordinates = []
-        x_factor = 10
-        y_factor = 10
+        x_factor = 1
+        y_factor = 1
         z_factor = 2 * y_factor
+        limit = 0.5
 
         for i in (range(len(waypoint) / 3)):
             x_coordinate.append(waypoint[0 + i * 3])
@@ -193,7 +198,7 @@ class ArtificialPotentialField:
             obs123.dim = obs_from_obstacle_map.dim
             obs123.typeOfObstacle = obs_from_obstacle_map.typeOfObstacle
             # ToDo
-            obs123.classification = 10  # obs123.get_classification(df=self.df)
+            obs123.classification = 2  # obs123.get_classification(df=self.df)
 
             if obs123.geometry == 'box':
                 obs123.a = obs_from_obstacle_map.dim[0] * x_factor
@@ -219,8 +224,10 @@ class ArtificialPotentialField:
         if mode == 0:
             # Calculate the gradient due to the influence of the goal
 
+            # ToDo
             goal_point = self.next_waypoint
             transp_pot_coord = pot_coordinates.transpose()
+            print("This is trans_pot_coord" + str(transp_pot_coord))
             difference = transp_pot_coord - goal_point
             transp_difference = difference.transpose()
             distance = np.linalg.norm(difference, axis=1)
@@ -234,48 +241,45 @@ class ArtificialPotentialField:
             # gradient[2] = gradient[2] + (ka * (difference[2]))/distance
 
             # Calculate the gradient due to the influence of the trench
-
-
             last_point = self.previous_waypoint
             help_vector = transp_pot_coord - last_point
             transp_help_vector = help_vector.transpose()
             line_vector = goal_point - last_point
             # print(last_point)
-            # print(help_vector)
-            # print(line_vector)
-            # print(transp_help_vector)
+            print(help_vector)
+            print(line_vector)
+            print(transp_help_vector)
             term_1 = line_vector[2] * transp_help_vector[1] - line_vector[1] * transp_help_vector[2]
             term_2 = line_vector[0] * transp_help_vector[2] - line_vector[2] * transp_help_vector[0]
             term_3 = line_vector[1] * transp_help_vector[0] - line_vector[0] * transp_help_vector[1]
-            # term_1 = line_vector[2]*help_vector[1]-line_vector[1]*help_vector[2]
-            # term_2 = line_vector[0]*help_vector[2]-line_vector[2]*help_vector[0]
-            # term_3 = line_vector[1]*help_vector[0]-line_vector[0]*help_vector[1]
-            # print(term_1)
-            # print(term_2)
-            # print(term_3)
+
             gradient[0] = gradient[0] + (
-                    -1 * line_vector[2] * term_2 * kb + line_vector[1] * term_3 * kb) / np.linalg.norm(
-                line_vector) * ((term_1 ** 2 + term_2 ** 2 + term_3 ** 2) ** 0.5)
+                    -1 * line_vector[2] * term_2 * kb + line_vector[1] * term_3 * kb) / (np.linalg.norm(
+                line_vector) * ((term_1 ** 2 + term_2 ** 2 + term_3 ** 2) ** 0.5))
             gradient[1] = gradient[1] + (
-                    line_vector[2] * term_1 * kb - line_vector[0] * term_3 * kb) / np.linalg.norm(
-                line_vector) * ((term_1 ** 2 + term_2 ** 2 + term_3 ** 2) ** 0.5)
+                    line_vector[2] * term_1 * kb - line_vector[0] * term_3 * kb) / (np.linalg.norm(
+                line_vector) * ((term_1 ** 2 + term_2 ** 2 + term_3 ** 2) ** 0.5))
             gradient[2] = gradient[2] + (
-                    -1 * line_vector[1] * term_1 * kb + line_vector[0] * term_2 * kb) / np.linalg.norm(
-                line_vector) * ((term_1 ** 2 + term_2 ** 2 + term_3 ** 2) ** 0.5)
+                    -1 * line_vector[1] * term_1 * kb + line_vector[0] * term_2 * kb) / (np.linalg.norm(
+                line_vector) * ((term_1 ** 2 + term_2 ** 2 + term_3 ** 2) ** 0.5))
             # gradient[0] = (kb*(transp_help_vector[2]*term_2+transp_help_vector[1]*term_3))/(np.linalg.norm(np.cross(help_vector, line_vector), axis=1)*np.linalg.norm(help_vector))
             # gradient[1] = (kb*(help_vector[2]*term_1-help_vector[0]*term_3))/(np.linalg.norm(np.cross(help_vector, line_vector), axis=1)*np.linalg.norm(help_vector))
             # gradient[2] = (kb*(help_vector[1]*term_1-help_vector[0]*term_2))/(np.linalg.norm(np.cross(help_vector, line_vector), axis=1)*np.linalg.norm(help_vector))
 
 
         # Calculate the gradient to ensure the minimum flight height
-        gradient[2] = gradient[2] - 1 / ((pot_coordinates[2] - min_flight_height) ** 2)
+        z_distance = pot_coordinates[2] - 0.5
+        mask = z_distance < limit
+        temp_gradient = (z_distance) / (z_distance ** 3)
+        temp_gradient[mask] = 10**12
+        gradient[2] = gradient[2] + temp_gradient
 
         # print(gradient)
         # Define the message
         grad_list = gradient[0].astype(np.float32).tolist()
         grad_list.extend(gradient[1].astype(np.float32).tolist())
         grad_list.extend(gradient[2].astype(np.float32).tolist())
-        # print(grad_list)
+        print(grad_list)
         gradient_field = potential_field_msgResponse()
         gradient_field.resp.data = grad_list
         return gradient_field
@@ -302,18 +306,30 @@ class Obstacle:
             self.classification = df.loc[df['Hindernisart'] == self.typeOfObstacle, 'Gefahrenindex'].iloc[0]
         if not found:
             # set default value
-            self.classification = 1
+            self.classification = 2
         return self.classification
 
     # Calculating the potential of a certain point
     def obstacle_potential_function(self, uav_pose, waypoint, der):
+        rho0 = 20
+        close = 10**-8
         x_dist = waypoint[0] - self.pose[0]
         y_dist = waypoint[1] - self.pose[1]
         z_dist = waypoint[2] - self.pose[2]
+        print(x_dist)
+        mask_1 = abs(x_dist) < close
+        mask_2 = abs(y_dist) < close
+        mask_3 = abs(z_dist) < close
+        print(mask_1)
+        print(mask_2)
+        print(mask_3)
+        x_dist[mask_1] = 10**-8
+        y_dist[mask_2] = 10**-8
+        z_dist[mask_3] = 10**-8
 
         # ToDo:
-        self.a = self.b = self.c = 1.
-        self.classification = classification
+        # self.a = self.b = self.c = 1
+        self.classification = 2
 
         # if not der:
         #     potential_test = self.classification/((x_dist**2)/self.a**2 + (y_dist**2)/self.b**2 + (z_dist**2)/self.c**2)
@@ -324,19 +340,27 @@ class Obstacle:
         #     z_grad = ((-1*self.classification*2*z_dist**2)/(self.c**2))/(x_dist**2/self.a**2 + y_dist**2/self.b**2 + z_dist**2/self.c**2)
         #     return [x_grad, y_grad, z_grad]
         if not der:
-            potential_test = .5 * self.classification / \
+            potential_test = .5 * self.classification * (1 /
                              ((x_dist ** 2) / self.a ** 2
                               + (y_dist ** 2) / self.b ** 2
-                              + (z_dist ** 2) / self.c ** 2)
+                              + (z_dist ** 2) / self.c ** 2) - 1 / rho0**2)
             return potential_test
         else:
+            rospy.loginfo("Class.: " + str(self.classification))
+            rospy.loginfo("X-Dist.: " + str(x_dist))
+            rospy.loginfo("a, b, c: " + str(self.a) + " " + str(self.b) + " " + str(self.c))
 
-            x_grad = ((-1 * self.classification * x_dist) / (self.a ** 2)) / \
-                     ((x_dist ** 2 / self.a ** 2 + y_dist ** 2 / self.b ** 2 + z_dist ** 2 / self.c ** 2) ** 2)
-            y_grad = ((-1 * self.classification * y_dist) / (self.b ** 2)) / \
-                     ((x_dist ** 2 / self.a ** 2 + y_dist ** 2 / self.b ** 2 + z_dist ** 2 / self.c ** 2) ** 2)
-            z_grad = ((-1 * self.classification * z_dist) / (self.c ** 2)) / \
-                     ((x_dist ** 2 / self.a ** 2 + y_dist ** 2 / self.b ** 2 + z_dist ** 2 / self.c ** 2) ** 2)
+            if not x_dist ** 2 / self.a**2 + y_dist**2 / self.b**2 + z_dist**2 / self.c**2 > rho0**2:
+
+                x_grad = ((-1 * self.classification * x_dist) / (self.a ** 2)) / \
+                         ((x_dist ** 2 / self.a ** 2 + y_dist ** 2 / self.b ** 2 + z_dist ** 2 / self.c ** 2) ** 2)
+                y_grad = ((-1 * self.classification * y_dist) / (self.b ** 2)) / \
+                         ((x_dist ** 2 / self.a ** 2 + y_dist ** 2 / self.b ** 2 + z_dist ** 2 / self.c ** 2) ** 2)
+                z_grad = ((-1 * self.classification * z_dist) / (self.c ** 2)) / \
+                         ((x_dist ** 2 / self.a ** 2 + y_dist ** 2 / self.b ** 2 + z_dist ** 2 / self.c ** 2) ** 2)
+            else:
+                return [[0], [0], [0]]
+
             return [x_grad, y_grad, z_grad]
 
 
