@@ -17,9 +17,9 @@ from uav_path_planning.srv import potential_field_msg, potential_field_msgRespon
 
 ka = rospy.get_param("apf_ka", 1.0)         # parameter for the attractiveness of the goal
 kb = 0.       # parameter for the attractiveness of the trench
-kc = 10.
+kc = 5.
 kd = 0.
-rho0 = 20.
+rho0 = 5.
 x_factor = 1.
 y_factor = 1.
 z_factor = 1.
@@ -141,17 +141,17 @@ class ArtificialPotentialField:
             dist2 = np.linalg.norm(np.cross(help_vector, line_vector), axis=1) / np.linalg.norm(line_vector)
             potential = potential + kb * dist2
 
-        # Build a z-direction potential to enforce the minimum flight height
-        # Minimum flight height is 0.5m
-        # print(pot_coordinates)
-        z_distance = np.array(pot_coordinates[2]-limit)
-        # print(z_vector)
-        # z_vector = np.ma.array(z_vector, mask=(z_vector == 0.5))        # Mask array to avoid runtime warning
-        mask = z_distance < limit
-        temp_potential = kd * abs(1 / z_distance)
-        temp_potential[mask] = 10**12
-        potential = temp_potential + potential
-        # print(potential)
+            # Build a z-direction potential to enforce the minimum flight height
+            # Minimum flight height is 0.5m
+            # print(pot_coordinates)
+            z_distance = np.array(pot_coordinates[2]-limit)
+            # print(z_vector)
+            # z_vector = np.ma.array(z_vector, mask=(z_vector == 0.5))        # Mask array to avoid runtime warning
+            mask = z_distance < limit
+            temp_potential = kd * abs(1 / z_distance)
+            temp_potential[mask] = 10**12
+            potential = temp_potential + potential
+            # print(potential)
 
         # Define the message
         pot_list = potential[0].astype(np.float32).tolist()
@@ -265,12 +265,12 @@ class ArtificialPotentialField:
             # gradient[2] = (kb*(help_vector[1]*term_1-help_vector[0]*term_2))/(np.linalg.norm(np.cross(help_vector, line_vector), axis=1)*np.linalg.norm(help_vector))
 
 
-        # Calculate the gradient to ensure the minimum flight height
-        z_distance = pot_coordinates[2] - limit
-        mask = z_distance < limit
-        temp_gradient = kd * - z_distance / np.abs(z_distance ** 3)
-        temp_gradient[mask] = -10**12
-        gradient[2] = gradient[2] + temp_gradient
+            # Calculate the gradient to ensure the minimum flight height
+            z_distance = pot_coordinates[2] - limit
+            mask = z_distance < limit
+            temp_gradient = kd * - z_distance / np.abs(z_distance ** 3)
+            temp_gradient[mask] = kd * -10**12
+            gradient[2] = gradient[2] + temp_gradient
 
         # print(gradient)
         # Define the message
