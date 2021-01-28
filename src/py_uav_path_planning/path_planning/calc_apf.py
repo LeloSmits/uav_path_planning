@@ -15,9 +15,15 @@ from uav_path_planning.msg import obstacleListMsg
 from mavros_msgs.msg import Waypoint
 from uav_path_planning.srv import potential_field_msg, potential_field_msgResponse
 
-ka = 1.0         # parameter for the attractiveness of the goal
-kb = 0.1       # parameter for the attractiveness of the trench
-
+ka = rospy.get_param("apf_ka", 1.0)         # parameter for the attractiveness of the goal
+kb = 0.       # parameter for the attractiveness of the trench
+kc = 10.
+kd = 0.
+rho0 = 20.
+x_factor = 1.
+y_factor = 1.
+z_factor = 1.
+limit = 0.
 
 class ArtificialPotentialField:
 
@@ -69,11 +75,6 @@ class ArtificialPotentialField:
         y_coordinate = []
         z_coordinate = []
         pot_coordinates = []
-        limit = 0.5
-
-        x_factor = 1  # 10
-        y_factor = 1  # 10
-        z_factor = 2*y_factor
 
         for i in (range(len(waypoint) / 3)):
             x_coordinate.append(waypoint[0 + i * 3])
@@ -99,6 +100,7 @@ class ArtificialPotentialField:
             obs123.geometry = obs_from_obstacle_map.geometry
             obs123.dim = obs_from_obstacle_map.dim
             obs123.typeOfObstacle = obs_from_obstacle_map.typeOfObstacle
+            obs123.get_classification(df=self.df)
 
             if obs123.geometry == 'box':
                 obs123.a = obs_from_obstacle_map.dim[0] * x_factor
@@ -111,7 +113,7 @@ class ArtificialPotentialField:
             elif obs123.geometry == 'sphere':
                 obs123.a = obs_from_obstacle_map.dim[0] * x_factor
                 obs123.b = obs123.a
-                obs123.c = obs123.a * 2
+                obs123.c = obs123.a * z_factor  # * 2
 
             obstacle_list.append(obs123)
         my_length = len(waypoint) / 3
@@ -142,11 +144,11 @@ class ArtificialPotentialField:
         # Build a z-direction potential to enforce the minimum flight height
         # Minimum flight height is 0.5m
         # print(pot_coordinates)
-        z_distance = np.array(pot_coordinates[2]-0.5)
+        z_distance = np.array(pot_coordinates[2]-limit)
         # print(z_vector)
         # z_vector = np.ma.array(z_vector, mask=(z_vector == 0.5))        # Mask array to avoid runtime warning
         mask = z_distance < limit
-        temp_potential = abs(1 / z_distance)
+        temp_potential = kd * abs(1 / z_distance)
         temp_potential[mask] = 10**12
         potential = temp_potential + potential
         # print(potential)
@@ -168,10 +170,7 @@ class ArtificialPotentialField:
         y_coordinate = []
         z_coordinate = []
         pot_coordinates = []
-        x_factor = 1
-        y_factor = 1
-        z_factor = 2 * y_factor
-        limit = 0.5
+
 
         for i in (range(len(waypoint) / 3)):
             x_coordinate.append(waypoint[0 + i * 3])
@@ -197,8 +196,7 @@ class ArtificialPotentialField:
             obs123.geometry = obs_from_obstacle_map.geometry
             obs123.dim = obs_from_obstacle_map.dim
             obs123.typeOfObstacle = obs_from_obstacle_map.typeOfObstacle
-            # ToDo
-            obs123.classification = 2  # obs123.get_classification(df=self.df)
+            obs123.get_classification(df=self.df)
 
             if obs123.geometry == 'box':
                 obs123.a = obs_from_obstacle_map.dim[0] * x_factor
@@ -211,7 +209,7 @@ class ArtificialPotentialField:
             elif obs123.geometry == 'sphere':
                 obs123.a = obs_from_obstacle_map.dim[0] * x_factor
                 obs123.b = obs123.a
-                obs123.c = obs123.a * 2
+                obs123.c = obs123.a * z_factor  # * 2
 
             obstacle_list.append(obs123)
         my_length = len(waypoint) / 3
@@ -268,10 +266,10 @@ class ArtificialPotentialField:
 
 
         # Calculate the gradient to ensure the minimum flight height
-        z_distance = pot_coordinates[2] - 0.5
+        z_distance = pot_coordinates[2] - limit
         mask = z_distance < limit
-        temp_gradient = (z_distance) / (z_distance ** 3)
-        temp_gradient[mask] = 10**12
+        temp_gradient = kd * - z_distance / np.abs(z_distance ** 3)
+        temp_gradient[mask] = -10**12
         gradient[2] = gradient[2] + temp_gradient
 
         # print(gradient)
@@ -306,12 +304,11 @@ class Obstacle:
             self.classification = df.loc[df['Hindernisart'] == self.typeOfObstacle, 'Gefahrenindex'].iloc[0]
         if not found:
             # set default value
-            self.classification = 2
+            self.classification = kc
         return self.classification
 
     # Calculating the potential of a certain point
     def obstacle_potential_function(self, uav_pose, waypoint, der):
-        rho0 = 20
         close = 10**-8
         x_dist = waypoint[0] - self.pose[0]
         y_dist = waypoint[1] - self.pose[1]
@@ -329,7 +326,7 @@ class Obstacle:
 
         # ToDo:
         # self.a = self.b = self.c = 1
-        self.classification = 2
+        # self.classification = 2
 
         # if not der:
         #     potential_test = self.classification/((x_dist**2)/self.a**2 + (y_dist**2)/self.b**2 + (z_dist**2)/self.c**2)

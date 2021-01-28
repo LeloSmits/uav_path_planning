@@ -42,11 +42,11 @@ class LocalPathPlanner(object):
         # Local Minima Bug-APF
         # ToDo: Make PARAM
         self.bug_mode_allowed = rospy.get_param('bug_mode_allowed', True)
-        self.bug_step_size = rospy.get_param('bug_step_size', .2)
+        self.bug_step_size = rospy.get_param('bug_step_size', 1.)
         self.bug_timeout = rospy.get_param('bug_timeout', .5)  # seconds
         self.bug_deviation_from_path_max = rospy.get_param('bug_deviation_from_path_max', 20.)
         self.bug_gd_step_size = rospy.get_param('bug_gd_step_size', self.step_size_max)
-        self.bug_gd_max_iter = rospy.get_param('bug_gd_max_iter', 1000)
+        self.bug_gd_max_iter = rospy.get_param('bug_gd_max_iter', 100)
         self.bug_correction_factor = rospy.get_param('bug_correction_factor', 1)
 
         self.uav_is_stalled_time_limit = rospy.get_param('uav_is_stalled_time_limit', 5)  # secs
@@ -329,7 +329,7 @@ class LocalPathPlanner(object):
         gradient_srv_resp = self.client_apf_potential(potential_srv_req)
         potential_obs_only = gradient_srv_resp.resp.data[0]
         gradient_srv_resp = self.client_apf_gradient(potential_srv_req)
-        gradient_obs_only = deseralize_coordinates(gradient_srv_resp.resp.data, 3)[0]
+        gradient_obs_only = self.deseralize_coordinates(gradient_srv_resp.resp.data, 3)[0]
         # gradient_obs_only[2] = 0
 
         tang = self.calc_tangential(vector_normal=gradient_obs_only, vector_direction=direction_bug)
@@ -342,7 +342,7 @@ class LocalPathPlanner(object):
         potential_srv_resp = self.client_apf_potential(potential_srv_req)
         gradient_srv_resp = self.client_apf_gradient(potential_srv_req)
         potential_new_obs_only = potential_srv_resp.resp.data[0]
-        gradient_new_obs_only = deseralize_coordinates(gradient_srv_resp.resp.data, 3)[0]
+        gradient_new_obs_only = self.deseralize_coordinates(gradient_srv_resp.resp.data, 3)[0]
         gradient_new_obs_only[2] = 0
 
         potential_delta = uav_potential_target_obs_only - potential_new_obs_only
@@ -443,8 +443,7 @@ class LocalPathPlanner(object):
         escape_trigger = False
         escape_trigger_pos = None
         extra_distance = .1
-        reverse_time = rospy.time(
-            5)  # time to give the uav to reverse its direction before checking the distance violations again
+        reverse_time = rospy.Time.from_sec(5)  # time to give the uav to reverse its direction before checking the distance violations again
 
         while not rospy.is_shutdown():  # Exits when timeout or distance threshold reached or an escape point is found
             uav_pos = self._get_uav_position()
