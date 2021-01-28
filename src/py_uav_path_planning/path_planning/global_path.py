@@ -17,20 +17,15 @@ class GlobalPath(object):
         self.name = 'global_path'
         rospy.init_node(self.name)
 
-        self.uav_pose = None  # type: PoseStamped  # ToDo Change to Pose not PoseStamped
+        self.uav_pose = None  # type: PoseStamped
         self.uav_pose_at_start = None  # type: PoseStamped
         self.mavros_state = None  # type: State
 
         # ToDo: read from params
         # self.wp_global_all = rospy.get_param('wp_global_all')  # type: typing.List[PoseStamped]
-        self.waypoint_global_all = WaypointList()
-        wp_1 = Waypoint()
-        wp_1.x_lat = 25  #  Standart: 25, LocalMinima3&4: 12
-        wp_1.y_long = 0  #  Standart: 0, LocalMinima3&4: 0
-        wp_1.z_alt = .5
-        self.waypoint_global_all.waypoints.append(wp_1)
 
-        self.waypoint_global_current = None  # type: Waypoint
+        self.waypoint_global_all = WaypointList()
+        self.waypoint_global_next = None  # type: Waypoint
         self.waypoint_global_previous = None  # type: Waypoint
 
         self.local_setpoint = None  # type: PositionTarget
@@ -62,10 +57,6 @@ class GlobalPath(object):
         # Thread to forward the local setpoints from Local Planner to Mavros
         self._thread_forward_local_setpoints = threading.Thread(target=self._forward_local_setpoints)
         self._thread_forward_local_setpoints.daemon = True
-
-        # Thread to log waypoints. Maybe put into a seperate node?
-        self._thread_position_logger = threading.Thread(target=self.log_path)
-        self._thread_position_logger.daemon = False
 
         # --- PUBLISHERS --- #
         # Publishes the next global waypoint
@@ -117,12 +108,12 @@ class GlobalPath(object):
         t = threading.current_thread()
 
         # Wait until the global waypoints are set
-        while (self.waypoint_global_current is None or self.waypoint_global_previous is None) \
+        while (self.waypoint_global_next is None or self.waypoint_global_previous is None) \
                 and getattr(t, "do_run", True):
             self._rate_publish.sleep()
 
         while not rospy.is_shutdown() and getattr(t, "do_run", True):
-            self._pub_waypoint_global_current.publish(self.waypoint_global_current)
+            self._pub_waypoint_global_current.publish(self.waypoint_global_next)
             self._pub_waypoint_global_previous.publish(self.waypoint_global_previous)
             self._rate_publish.sleep()
         return
@@ -226,50 +217,50 @@ class GlobalPath(object):
 
         return all(np.isclose(pos[0], pos[1], atol=atol))
 
-    def log_path(self):
-        from datetime import datetime
+    def read_waypoints_pickle(self):
+        """Data format for pickle-file: list or tuple of list-like arrays (list, tuple, numpy.arrays). The first index
+        accesses the different waypoints, the second index accesses the x, y and z coordinate of that waypoint"""
         import pickle
 
-        uav_path = np.zeros((1000, 3))
-        now = datetime.now()
-        file_path = '/home/daniel/catkin_ws/src/path_planning_private/src/py_uav_path_planning/path_planning/path_logs/' \
-                    + 'path_log_' + now.strftime("%d_%m_%Y_%H_%M_%S")
-        file_log = open(file_path, 'wb')
-        i = 0
+        timeout = 10  # seconds
 
-        rospy.loginfo(self.name + ': Position log started')
-        while not self.finished:
-            uav_path[i] = (self.uav_pose.pose.position.x, self.uav_pose.pose.position.y, self.uav_pose.pose.position.z)
-            if i == uav_path.shape[0] - 1:
-                uav_path = np.concatenate((uav_path, np.zeros(uav_path.shape)), axis=0)
-            i += 1
-            self._rate_publish.sleep()
+        self.waypoint_global_all = WaypointList()
 
-        uav_path = uav_path[:i]
-        pickle.dump(uav_path, file_log, protocol=pickle.HIGHEST_PROTOCOL)
-        rospy.loginfo(self.name + ': Position log written')
+        # Check if param for path to pickle file is set yet. If not, wait.
+        if not rospy.has_param('path_to_waypoints_pickle'):
+            rospy.loginfo(self.name + ': Path to global waypoints pickle file not set, waiting')
+            rospy.sleep(timeout)
+        # Timeout
+        if not rospy.has_param('path_to_waypoints_pickle'):
+            rospy.logwarn(self.name + ': Path to waypoints pickle file not set. Timeout reached.')
+
+        else:
+            wpts_pickle = pickle.load(open(rospy.get_param('path_to_waypoints_pickle'), 'rb'))
+            for wpt_np in wpts_pickle:
+                wpt = Waypoint()
+                wpt.x_lat = wpt_np[0]
+                wpt.y_long = wpt_np[1]
+                wpt.z_alt = wpt_np[2]
+                self.waypoint_global_all.waypoints.append(wpt)
         return
 
     def start(self):
         """main function of GlobalPathPlanner"""
 
         rospy.loginfo(self.name + ": Node started")
+        rospy.set_param("path_logger_active", False)
 
         rospy.sleep(1)
+
+        self.read_waypoints_pickle()
+        rospy.loginfo(self.name + ": Global waypoints read from file")
+
         while True:
             if self.uav_pose is None:
                 rospy.loginfo(self.name + ": Waiting for UAV Pose")
                 self._rate_reached_waypoint.sleep()
             else:
                 uav_pose_start = copy.copy(self.uav_pose)  # copy is needed here, because uav_pose is mutable!
-
-                # Define the first previous waypoint as the uav start position
-                wp_global_previous_temp = Waypoint()
-                wp_global_previous_temp.x_lat = uav_pose_start.pose.position.x
-                wp_global_previous_temp.y_long = uav_pose_start.pose.position.y
-                wp_global_previous_temp.z_alt = uav_pose_start.pose.position.z
-                wp_global_previous_temp = copy.copy(wp_global_previous_temp)
-
                 rospy.loginfo(self.name + ": UAV Pose received")
                 break
 
@@ -285,18 +276,25 @@ class GlobalPath(object):
         wp_global_previous_temp.y_long = uav_pose_after_takeoff.pose.position.y
         wp_global_previous_temp.z_alt = uav_pose_after_takeoff.pose.position.z
         wp_global_previous_temp = copy.copy(wp_global_previous_temp)
-        self.waypoint_global_current = self.waypoint_global_all.waypoints[0]
+        self.waypoint_global_next = self.waypoint_global_all.waypoints[0]
         self.waypoint_global_previous = wp_global_previous_temp
         self._thread_waypoint_global.start()
 
-        self._thread_forward_local_setpoints.start()  # Starts forwarding the setpoints from the local planner
+        # Activate path logging node. Maybe not best coding practice to do this with a parameter and not a publish/
+        # subscriber or service but the path logger was only needed to record test results
+        rospy.set_param("path_logger_active", True)
 
-        self._thread_takeoff_setpoint.do_run = False  # Stops sending the takeoff waypoint. Between this and
+        # Starts forwarding the setpoints from the local planner
+        self._thread_forward_local_setpoints.start()
+
+        # Stops sending the takeoff waypoint. Between this and
         # sending the next waypoint from the local planner can be a maximum of .5 seconds, since waypoints have
         # to be published with >2Hz (PX4/MAVROS restriction)
+        self._thread_takeoff_setpoint.do_run = False
 
-        for wp_global_current in self.waypoint_global_all.waypoints:  # Iterates over all global waypoints
-            self.waypoint_global_current = wp_global_current
+        # Iterates over all global waypoints
+        for wp_global_current in self.waypoint_global_all.waypoints:
+            self.waypoint_global_next = wp_global_current
             self.waypoint_global_previous = wp_global_previous_temp
             rospy.loginfo(self.name + ': Published new global waypoint')
 
@@ -304,13 +302,12 @@ class GlobalPath(object):
                     and not rospy.is_shutdown():
                 self._rate_reached_waypoint.sleep()
 
-            rospy.loginfo(self.uav_pose)
-            rospy.loginfo(wp_global_current)
             rospy.loginfo(self.name + ': Reached previous global waypoint')
             wp_global_previous_temp = copy.copy(wp_global_current)
 
         self.finished = True
-        self._thread_forward_local_setpoints.do_run = False
+        rospy.set_param("path_logger_active", False)
+        self._thread_forward_local_setpoints.do_run = False  # Stops forwarding the setpoints from the local planner
         rospy.loginfo(self.name + ': Reached final global waypoint')
         rospy.sleep(10)
         return

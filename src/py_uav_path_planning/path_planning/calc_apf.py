@@ -17,7 +17,8 @@ from uav_path_planning.srv import potential_field_msg, potential_field_msgRespon
 
 ka = 2
 kb = 0.
-min_flight_height = -1  # ToDo: Make ROSParam
+min_flight_height = -5  # ToDo: Make ROSParam
+classification = 15
 
 
 class ArtificialPotentialField:
@@ -218,7 +219,6 @@ class ArtificialPotentialField:
         if mode == 0:
             # Calculate the gradient due to the influence of the goal
 
-            # ToDo
             goal_point = self.next_waypoint
             transp_pot_coord = pot_coordinates.transpose()
             difference = transp_pot_coord - goal_point
@@ -313,7 +313,7 @@ class Obstacle:
 
         # ToDo:
         self.a = self.b = self.c = 1.
-        self.classification = 20
+        self.classification = classification
 
         # if not der:
         #     potential_test = self.classification/((x_dist**2)/self.a**2 + (y_dist**2)/self.b**2 + (z_dist**2)/self.c**2)

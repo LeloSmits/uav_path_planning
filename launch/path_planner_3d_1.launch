@@ -1,12 +1,10 @@
 <?xml version="1.0"?>
 <launch>
     <group ns="path_planning">
-        <param name="path_to_gazebo_xml" value="/home/daniel/catkin_ws/src/path_planning_private/examples/gazebo_worlds/gazebo_BunchOfBoxes.xml" />
+        <param name="path_to_gazebo_xml" value="/home/daniel/catkin_ws/src/path_planning_private/examples/gazebo_worlds/gazebo_3d_1.xml" />
         <param name="path_to_classifier_csv" value="/home/daniel/catkin_ws/src/path_planning_private/src/py_uav_path_planning/path_planning/Classification.csv" />
-        <param name="path_to_waypoints_pickle" value="/home/daniel/catkin_ws/src/path_planning_private/examples/global_waypoints/bunch_of_boxes_wpts.p" />
-        <param name="tol_wp_local" value=".5" />
-        <param name="tol_wp_global" value=".1" />
-        <param name="takeoff_altitude" value="0.7" />
+        <param name="path_to_waypoints_pickle" value="/home/daniel/catkin_ws/src/path_planning_private/examples/global_waypoints/3d_1_wpts.p" />
+        <param name="takeoff_altitude" value="10" />
         <param name="apf_3D" value="true" />
         <param name="bug_mode_allowed" value="false" />
 <!--        <arg name="wp_global_all" value=-->
@@ -26,9 +24,8 @@
 <!--                y: 0.0-->
 <!--                z: 0.0-->
 <!--                w: 0.0]" />-->
-        <node pkg="uav_path_planning" type="path_logger_node" name="path_logger_node" launch-prefix="xterm -e"/>
-        <node pkg="uav_path_planning" type="obstacle_sensor_node" name="obstacle_sensor_node" launch-prefix="xterm -e"/>
-        <node pkg="uav_path_planning" type="obstacle_map_node" name="obstacle_map_node" launch-prefix="xterm -e"/>
+        <node pkg="uav_path_planning" type="obstacle_sensor_node" name="obstacle_sensor_node"/>
+        <node pkg="uav_path_planning" type="obstacle_map_node" name="obstacle_map_node"/>
         <node pkg="uav_path_planning" type="local_path_planner_node" name="local_path_planner_node" launch-prefix="xterm -e"/>
         <node pkg="uav_path_planning" type="global_path_node" name="global_path_node" launch-prefix="xterm -e"/>
         <node pkg="uav_path_planning" type="calc_apf.py" name="calc_apf"/>
@@ -36,7 +33,7 @@
 
     <!-- MAVROS, PX4 SITL and Gazebo -->
     <include file="$(find px4)/launch/mavros_posix_sitl.launch">
-        <arg name="world" value="/home/daniel/catkin_ws/src/path_planning_private/examples/gazebo_worlds/gazebo_BunchOfBoxes.xml"/>
+        <arg name="world" value="/home/daniel/catkin_ws/src/path_planning_private/examples/gazebo_worlds/gazebo_3d_1.xml"/>
     </include>
 
 </launch>

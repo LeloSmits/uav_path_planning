@@ -1,1 +1,1 @@
-from serialization import serialize_coordinates, deseralize_coordinates
+from path_logger import PathLogger

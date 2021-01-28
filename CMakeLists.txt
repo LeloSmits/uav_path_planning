@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.0.2)
 project(uav_path_planning)
 
-find_package(catkin REQUIRED COMPONENTS rospy roscpp geometry_msgs mavros_msgs std_msgs message_generation)
+find_package(catkin REQUIRED COMPONENTS roscpp rospy geometry_msgs mavros_msgs std_msgs message_generation)
 
 catkin_python_setup()
 
@@ -27,6 +27,10 @@ generate_messages(
 catkin_package(CATKIN_DEPENDS message_runtime)
 
 include_directories(include ${catkin_INCLUDE_DIRS})
+
+add_executable(offb_node src/offb_node.cpp)
+
+target_link_libraries(offb_node ${catkin_LIBRARIES})
 
 install(
     PROGRAMS

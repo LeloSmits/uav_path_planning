@@ -1,0 +1,7 @@
+#!/usr/bin/env python2
+
+from py_uav_path_planning import PathLogger
+
+if __name__ == '__main__':
+    node = PathLogger()
+    node.start()
