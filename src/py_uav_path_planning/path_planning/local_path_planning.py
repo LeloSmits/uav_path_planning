@@ -33,9 +33,9 @@ class LocalPathPlanner(object):
         # Normal APF Path Planning
         self.allow_3D = rospy.get_param('apf_3D', False)
         self.control_type = rospy.get_param('apf_ctrl_type', 'position')
-        self.speed_max_xy = .5  # type: float  # Maximum speed in xy plane for velocity ctrl
-        self.speed_max_z = .5  # type: float  # Maximum speed in z plane for velocity ctrl
-        self.speed_multiplier = 3.  # type: float  # ToDo: Make adaptive
+        self.speed_max_xy = rospy.get_param('speed_max_xy', .5)  # type: float  # Maximum speed in xy plane for velocity ctrl
+        self.speed_max_z = rospy.get_param('speed_max_z', .5)  # type: float  # Maximum speed in z plane for velocity ctrl
+        self.speed_multiplier = rospy.get_param('speed_multiplier', 1.)  # type: float  # ToDo: Make adaptive
         self.step_size_max = rospy.get_param('step_size_max', 1.)
         self.max_iter_per_wp = rospy.get_param('apf_max_iter', 100)
 

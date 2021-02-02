@@ -19,10 +19,10 @@ ka = rospy.get_param("apf_ka")  # parameter for the attractiveness of the goal
 kb = rospy.get_param("apf_kb")  # parameter for the attractiveness of the trench
 kc = rospy.get_param("apf_kc")
 kd = rospy.get_param("apf_kd")
-rho0 = 10000.
+rho0 = 5.
 x_factor = 1.
 y_factor = 1.
-z_factor = .3
+z_factor = 1.
 
 limit = rospy.get_param("z_min")
 

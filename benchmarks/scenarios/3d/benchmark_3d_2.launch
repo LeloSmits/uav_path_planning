@@ -18,6 +18,10 @@
         <param name="apf_3D" value="true" />
         <param name="bug_mode_allowed" value="true" />
         <param name="apf_ctrl_type" value="velocity" />
+        <param name="speed_max_xy" value="3.0" />
+        <param name="speed_max_z" value="1." />
+        <param name="speed_multiplier" value="3." />
+
         <param name="step_size_max" value="1.0" />
         <param name="apf_max_iter" value="100" />
         <param name="bug_step_size" value="1.0" />
