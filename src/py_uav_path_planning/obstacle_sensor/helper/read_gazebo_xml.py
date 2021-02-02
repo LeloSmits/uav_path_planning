@@ -12,13 +12,17 @@ def read_gazebo_xml(filename, obstacle_prefix='obs_'):
 
     root_node = ET.parse(filename).getroot()
     models = root_node.findall('world/model')
+    # model_state = root_node.findall('world/state/model')
 
     allObstacles = list()
 
     for model in models:
-        if model.attrib['name'].startswith(obstacle_prefix):
+        if model.attrib['name'].startswith(obstacle_prefix) or model.attrib['name'].startswith('unit'):
             newObstacle = Obstacle(model.attrib['name'])
-            newObstacle.pose = np.fromstring(model.find('pose').text, dtype=float, sep=' ')
+
+            model_state = root_node.find('world/state/model[@name="{0}"]'.format(model.attrib['name']))
+            newObstacle.pose = np.fromstring(model_state.find('pose').text, dtype=float, sep=' ')
+
             geometryFirstChild = model.find('link/collision/geometry')[0]
             newObstacle.geometry = geometryFirstChild.tag
             if newObstacle.geometry == 'cylinder':

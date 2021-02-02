@@ -19,11 +19,11 @@ class ObstacleSensor(object):
         rospy.init_node(self.name)
 
         self.loop_rate = rospy.Rate(100)
-        self.all_obstacles = list()  # type: obstacleListMsg
+        self.all_obstacles = list()  # type: typing.List[obstacleMsg]
         self.active_obstacles = list()  # type: obstacleListMsg
         self.uav_pose = None
-        self.range = 50
-        self.angle = 360  # Added angle to only include obstacles within field of view
+        self.range = 20
+        self.angle = 60  # Added angle to only include obstacles within field of view
 
         rospy.Subscriber('/mavros/local_position/pose', PoseStamped, self._pose_callback)
         self.pub_obstacle_list = rospy.Publisher("active_obstacles", obstacleListMsg, queue_size=1)
@@ -62,6 +62,8 @@ class ObstacleSensor(object):
         """Reads the gazebo xml-file and saves all obstacles whose name begins with the predefined prefix."""
 
         self.all_obstacles = read_gazebo_xml(filepath)
+        for obs_i in self.all_obstacles:
+            rospy.loginfo("{0}:\t{1}\t{2}".format(obs_i.name, obs_i.typeOfObstacle, obs_i.pose[:3]))
         return
 
     # Added another condition to check if obstacle is within field of view of sensor

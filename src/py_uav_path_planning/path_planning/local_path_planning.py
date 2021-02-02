@@ -35,7 +35,7 @@ class LocalPathPlanner(object):
         self.control_type = rospy.get_param('apf_ctrl_type', 'position')
         self.speed_max_xy = .5  # type: float  # Maximum speed in xy plane for velocity ctrl
         self.speed_max_z = .5  # type: float  # Maximum speed in z plane for velocity ctrl
-        self.speed_multiplier = 1.  # type: float  # ToDo: Make adaptive
+        self.speed_multiplier = 3.  # type: float  # ToDo: Make adaptive
         self.step_size_max = rospy.get_param('step_size_max', 1.)
         self.max_iter_per_wp = rospy.get_param('apf_max_iter', 100)
 
@@ -43,7 +43,6 @@ class LocalPathPlanner(object):
         # ToDo: Make PARAM
         self.bug_mode_allowed = rospy.get_param('bug_mode_allowed', True)
         self.bug_step_size = rospy.get_param('bug_step_size', 1.)
-        self.bug_timeout = rospy.get_param('bug_timeout', .5)  # seconds
         self.bug_deviation_from_path_max = rospy.get_param('bug_deviation_from_path_max', 20.)
         self.bug_gd_step_size = rospy.get_param('bug_gd_step_size', self.step_size_max)
         self.bug_gd_max_iter = rospy.get_param('bug_gd_max_iter', 100)
@@ -204,8 +203,9 @@ class LocalPathPlanner(object):
         gradient_srv_req.mode = 0
         gradient_srv_resp = self.client_apf_gradient(gradient_srv_req)
         gradient = self.deseralize_coordinates(gradient_srv_resp.resp.data, 3)
-
+        rospy.loginfo("gradient: " + str(gradient))
         direction = -gradient[0]  # Subtraction because we want to descent / move to smaller potential
+        # rospy.loginfo("direction: " + str(direction))
         if not self.allow_3D:
             direction[2] = 0  # ToDo: make 3D - CHECK
         direction_length = np.linalg.norm(direction)  # ToDo: adapt for 3D - CHECK?
@@ -214,6 +214,7 @@ class LocalPathPlanner(object):
             if self.control_type == 'velocity':
                 setpoint = PositionTarget()
 
+                # rospy.loginfo("apf_new_setpoint")
                 if self.allow_3D:
                     # Deal with small step size
                     if np.isclose(direction_length, 0):
@@ -319,6 +320,9 @@ class LocalPathPlanner(object):
             else:
                 rospy.logerr("Wrong setpoint kind")
 
+        rospy.loginfo("uav_pos: " + str(uav_pos))
+        rospy.loginfo("setpoint: " + str(setpoint.position.x) + " " + str(setpoint.position.y)
+                      + " " + str(setpoint.position.z))
         return setpoint
 
     def apf_bug_setpoint(self, uav_pos, uav_potential_target_obs_only, direction_bug, vector_waypoints):
@@ -332,6 +336,8 @@ class LocalPathPlanner(object):
         gradient_obs_only = self.deseralize_coordinates(gradient_srv_resp.resp.data, 3)[0]
         # gradient_obs_only[2] = 0
 
+        # rospy.loginfo("bug_setpoint grad_obs_only: " + str(gradient_obs_only))
+        # rospy.loginfo("bug_setpoint direction_bug: " + str(direction_bug))
         tang = self.calc_tangential(vector_normal=gradient_obs_only, vector_direction=direction_bug)
 
         uav_pos_new = uav_pos + tang / np.linalg.norm(tang) * self.bug_step_size
@@ -352,6 +358,7 @@ class LocalPathPlanner(object):
         # here is not precise
         correction_step = potential_delta * gradient_new_obs_only / np.linalg.norm(gradient_new_obs_only) ** 2
         factor = 1
+        # rospy.loginfo("bug_setpoint")
         if np.linalg.norm(correction_step) > factor * self.bug_step_size:
             correction_step = correction_step * factor * self.bug_step_size / np.linalg.norm(correction_step)
 
@@ -363,6 +370,7 @@ class LocalPathPlanner(object):
         vector_waypoints_2d = copy.copy(vector_waypoints)
         gradient_obs_only_2d[2] = 0
         vector_waypoints_2d[2] = 0
+        # rospy.loginfo("bug_setpoint, grad_obs_only_2d: " + str(gradient_obs_only_2d))
         if np.isclose(np.abs(self.calc_angle(gradient_obs_only_2d, ref_axis=vector_waypoints_2d,
                                              plane_normal=np.array((0, 0, 1)))),
                       np.pi, atol=.1):
@@ -443,7 +451,8 @@ class LocalPathPlanner(object):
         escape_trigger = False
         escape_trigger_pos = None
         extra_distance = .1
-        reverse_time = rospy.Time.from_sec(5)  # time to give the uav to reverse its direction before checking the distance violations again
+        reverse_time = rospy.Time.from_sec(
+            5)  # time to give the uav to reverse its direction before checking the distance violations again
 
         while not rospy.is_shutdown():  # Exits when timeout or distance threshold reached or an escape point is found
             uav_pos = self._get_uav_position()
@@ -496,6 +505,9 @@ class LocalPathPlanner(object):
             setpoint.position.x = uav_pos_setpoint[0]
             setpoint.position.y = uav_pos_setpoint[1]
             setpoint.position.z = uav_pos_z_start  # Keep at a constant altitude
+            rospy.loginfo("destroyer")
+            rospy.loginfo("destroyer setpoint: " + str(uav_pos_setpoint))
+            rospy.loginfo("destroyer pos: " + str(uav_pos))
             setpoint.yaw = self.calc_angle(
                 vector=uav_pos_setpoint - uav_pos)
             self.setpoint_local = setpoint
@@ -629,6 +641,10 @@ class LocalPathPlanner(object):
         ref_axis_len = np.linalg.norm(ref_axis)
 
         cross = np.cross(ref_axis, vector)
+        # rospy.loginfo(cross)
+        # rospy.loginfo(vector)
+        # rospy.loginfo(vector.dot(ref_axis))
+        # rospy.loginfo(plane_normal.dot(cross))
         angle = np.arccos(vector.dot(ref_axis) / (vector_len * ref_axis_len)) * np.sign(plane_normal.dot(cross))
 
         return angle

@@ -13,7 +13,7 @@ class ObstacleMap(object):
         self.name = 'obstacle_map'
         rospy.init_node(self.name)
 
-        self.loop_rate = rospy.Rate(20)
+        self.loop_rate = rospy.Rate(100)
 
         self.uav_pose = None
 
@@ -23,7 +23,7 @@ class ObstacleMap(object):
 
         rospy.Subscriber('active_obstacles', obstacleListMsg, self._obstacle_list_callback)
         rospy.Subscriber('/mavros/local_position/pose', PoseStamped, self._pose_callback)
-        self.pub_obstacle_map = rospy.Publisher("obstacle_map", obstacleListMsg, queue_size=1)  # ToDo: find out if queue_size is important
+        self.pub_obstacle_map = rospy.Publisher("obstacle_map", obstacleListMsg, queue_size=1)
 
         rospy.loginfo(self.name + ": Node initialized")
 
