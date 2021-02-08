@@ -17,7 +17,7 @@ There are already a few example launch files in the folder ./launch. You can lau
 ```text
 roslaunch uav_path_planning path_planner_01.launch
 ```
-or some other launch file of your choice
+or some other launch file of your choice.
 
 ## Status
 
