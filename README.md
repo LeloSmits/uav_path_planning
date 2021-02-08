@@ -30,34 +30,39 @@ Some text
 ```text
 uav_path_planning/
 └── benchmarks/
-    ├── scenarios/
-    │   ├── 2d
-    │   └── 3d
-    └── classification_benchmark.csv        # Contains the danger index for different obstacle types; used by the benchmark launch files
-└── launch/
-    ├── benchmark_launch/
-    │   └── local_planner_sitl_3cam.launch  # Start the PX4 3DVFH Planner, requires the PX4 avoidance package
-    └── launch_files                        # Start various gazebo maps with our path planner
-└── msg/
-    ├── MultiArray.msg          # Message type used by the potential_field node
-    ├── obstacleListMsg.msg     # Message type used by the obstacle_sensor and the obstacle_map nodes
-    └── obstacleMsg.msg         # Message type used by the obstacle_sensor and the obstacle_map nodes
-└── nodes/
-    ├── global_path_node           
-    ├── local_path_planner_node
-    ├── obstacle_map_node
-    ├── obstacle_sensor_node
-    ├── path_logger_node
-    └── setup_path_logger_for_px4_node
-└── scripts/
-    └── mavros_path_planning_test.py    # Just used for some testing
-└── src/
-    ├── folder3/
-    │   ├── file1
-    │   └── file2
-    └── py_uav_path_planning/
-        ├── file3
-        └── file4
+│   ├── scenarios/
+│   │   ├── 2d
+│   │   └── 3d
+│   └── classification_benchmark.csv        # Contains the danger index for different obstacle types; used by the benchmark launch files
+├── launch/
+│   ├── benchmark_launch/
+│   │   └── local_planner_sitl_3cam.launch  # Start the PX4 3DVFH Planner, requires the PX4 avoidance package
+│   └── launch_files                        # Start various gazebo maps with our path planner
+├── msg/
+│   ├── MultiArray.msg          # Message type used by the potential_field node
+│   ├── obstacleListMsg.msg     # Message type used by the obstacle_sensor and the obstacle_map nodes
+│   └── obstacleMsg.msg         # Message type used by the obstacle_sensor and the obstacle_map nodes
+├── nodes/                      # This folder contains python files that can be used as a shortcut to start the nodes from the python package in /src
+│   ├── global_path_node           
+│   ├── local_path_planner_node
+│   ├── obstacle_map_node
+│   ├── obstacle_sensor_node
+│   ├── path_logger_node
+│   └── setup_path_logger_for_px4_node
+├── scripts/
+│   └── mavros_path_planning_test.py    # Just used for some testing
+├── src/                                # Contains the python source code
+│   └── py_uav_path_planning/           # The python package
+│       ├── fextras/
+│       │   ├── evaluate_log_file.py                    # Plots the logs file
+│       │   ├── path_logger.py                          # Logs the UAV position and velocity and the global waypoints for every time step 
+│       │   └── setup_path_logger_for_px4_avoidance.py  # Kills the offb_node and starts the path_logger
+│       ├── fobstacle_map/
+│       │   └── obstacle_map.py                         # Starts the obstacle map
+│       ├── fobstacle_sensor
+│       │   └── obstacle_sensor.py                      # Starts the obstacle sensor
+│       ├── fpath_planning/
+│       └── file4
 └── srv/
     ├── folder3/
     │   ├── file1

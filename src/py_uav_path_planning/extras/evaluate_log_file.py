@@ -96,23 +96,27 @@ def evaluate(pickle_file, pickle_file_2=None, names=("Log 1", "Log 2"), figtitle
         # The lns0 and lns00 variables are needed to show the legend in a twin-axis-plot
         lns000 = ax0[0].plot(pos_data[:, 0] - pos_data[0, 0], distance_from_path,
                            label=names[1] + ": Momentane Abweichung vom Pfad")
+        ax0[0].set_ylabel("Momentane Abweichung in m")
         lns0000 = ax00.plot(pos_data[:, 0] - pos_data[0, 0], integral_distance_from_path,
                           label=names[1] + ": Kumulierte Abweichung vom Pfad", linestyle="--")
+        ax00.set_ylabel("Kumulierte Abweichung in m")
         ax0[1].plot(pos_data[:, 0] - pos_data[0, 0], np.sqrt(pos_data[:, 11] ** 2 + pos_data[:, 12] ** 2),
                     label=names[1] + ': XY-Geschwindigkeit')
         ax0[1].plot(pos_data[:, 0] - pos_data[0, 0], pos_data[:, 13], label=names[1] + ': Z-Geschwindigkeit')
+        ax0[1].set_ylabel("Geschwindigkeit in m/s")
         lns = lns0 + lns00 + lns000 + lns0000
 
     # Set the
     for ax_i in ax0:
         ax_i.grid()
         ax_i.set_xlim(0, max(time_total_1, time_total_2))  # , pos_data[-1, 0] - pos_data[0, 0])
+        ax_i.set_xlabel("Zeit in s")
     ax0[0].set_ylim(0)
     ax00.set_ylim(0)
     ax00.grid(linestyle="--")
     ax0[0].set_title("Abweichung vom Pfad")
     labels = [l.get_label() for l in lns]
-    ax00.legend(lns, labels)
+    ax00.legend(lns, labels, loc="upper left")
 
     ax0[1].set_title("Lineare Geschwindigkeit")
     ax0[1].legend()
