@@ -22,7 +22,7 @@ class LocalPathPlanner(object):
         self.name = 'local_path_planner'
         rospy.init_node(self.name)
 
-        self._rate_publish = rospy.Rate(20)
+        self._rate_publish = rospy.Rate(50)
         self._map = list()  # type: typing.List[obstacleMsg]
         self.uav_pose = None  # type: Pose
 
@@ -33,8 +33,10 @@ class LocalPathPlanner(object):
         # Normal APF Path Planning
         self.allow_3D = rospy.get_param('apf_3D', False)
         self.control_type = rospy.get_param('apf_ctrl_type', 'position')
-        self.speed_max_xy = rospy.get_param('speed_max_xy', .5)  # type: float  # Maximum speed in xy plane for velocity ctrl
-        self.speed_max_z = rospy.get_param('speed_max_z', .5)  # type: float  # Maximum speed in z plane for velocity ctrl
+        self.speed_max_xy = rospy.get_param('speed_max_xy',
+                                            .5)  # type: float  # Maximum speed in xy plane for velocity ctrl
+        self.speed_max_z = rospy.get_param('speed_max_z',
+                                           .5)  # type: float  # Maximum speed in z plane for velocity ctrl
         self.speed_multiplier = rospy.get_param('speed_multiplier', 1.)  # type: float  # ToDo: Make adaptive
         self.step_size_max = rospy.get_param('step_size_max', 1.)
         self.max_iter_per_wp = rospy.get_param('apf_max_iter', 100)
@@ -426,8 +428,8 @@ class LocalPathPlanner(object):
         potential_srv_resp = self.client_apf_potential(potential_srv_req)
         uav_pos_potential = potential_srv_resp.resp.data[0]
 
-        initial_vector_to_path = self.calc_point_projected_on_line(uav_pos, waypoint_global_next_pos,
-                                                                   waypoint_global_previous_pos) - uav_pos
+        initial_vector_to_path = uav_pos - self.calc_point_projected_on_line(uav_pos, waypoint_global_next_pos,
+                                                                             waypoint_global_previous_pos)
         initial_vector_to_path[2] = 0  # Bug should be only 2D
 
         # If the stalled position is on the line between the waypoints, the initial_vector_to_path can be not orthogonal
@@ -450,7 +452,7 @@ class LocalPathPlanner(object):
 
         escape_trigger = False
         escape_trigger_pos = None
-        extra_distance = .1
+        extra_distance = 1.
         reverse_time = rospy.Time.from_sec(
             5)  # time to give the uav to reverse its direction before checking the distance violations again
 
@@ -527,7 +529,7 @@ class LocalPathPlanner(object):
 
             gradient_srv_resp = self.client_apf_gradient(potential_srv_req)
             descent_dir = -self.deseralize_coordinates(gradient_srv_resp.resp.data, 3)[0]
-            descent_dir[2] = 0  # Only move in xy-plane
+            # descent_dir[2] = 0  # Only move in xy-plane
 
             valid = False
             while step_size * (2 ** 11) > self.bug_gd_step_size:

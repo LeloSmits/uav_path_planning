@@ -1,1 +1,2 @@
 from path_logger import PathLogger
+from setup_path_logger_px4_avoidance import setup_px4_path_logger

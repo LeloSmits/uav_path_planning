@@ -19,10 +19,10 @@ ka = rospy.get_param("apf_ka")  # parameter for the attractiveness of the goal
 kb = rospy.get_param("apf_kb")  # parameter for the attractiveness of the trench
 kc = rospy.get_param("apf_kc")
 kd = rospy.get_param("apf_kd")
-rho0 = 5.
+rho0 = 10.
 x_factor = 1.
 y_factor = 1.
-z_factor = 1.
+z_factor = .5
 
 limit = rospy.get_param("z_min")
 
@@ -331,7 +331,7 @@ if __name__ == "__main__":
     while not rospy.has_param("path_to_classifier_csv"):
         rospy.loginfo("Param path_to_classifier_csv is not set, waiting.")
         rospy.sleep(.1)
-    filepath = rospy.get_param("path_to_classifier_csv")
+    filepath0 = rospy.get_param("path_to_classifier_csv")
     rospy.init_node('calc_apf')
-    ArtificialPotentialField(filepath=filepath)
+    ArtificialPotentialField(filepath=filepath0)
     rospy.spin()

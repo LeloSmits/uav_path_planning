@@ -13,6 +13,9 @@ from visualization_msgs.msg import MarkerArray
 from mavros_msgs.msg import PositionTarget, Waypoint, WaypointList
 
 
+Baumann = False
+
+
 class PathLogger:
     def __init__(self):
         self.name = 'path_logger'
@@ -40,10 +43,11 @@ class PathLogger:
 
         self.update_waypoints = True
 
-        self.uav_pose_stamped = PoseStamped()
-        self.uav_velocity_stamped = TwistStamped()
-        self.waypoint_global_next_published = Waypoint()
-        self.waypoint_global_previous_published = Waypoint()
+        self.uav_pose_stamped = None
+        self.uav_velocity_stamped = None
+        self.waypoint_global_next_published = None
+        self.waypoint_global_previous_published = None
+        self.marker_array_goal_position = None
 
         rospy.Subscriber("/mavros/local_position/pose", PoseStamped, self._callback_pose)
         rospy.Subscriber("/mavros/local_position/velocity_local", TwistStamped, self._callback_velocity)
@@ -60,6 +64,8 @@ class PathLogger:
 
         log_data = np.zeros((1000, 16))
 
+        rospy.sleep(1)
+
         while not rospy.has_param("path_logger_active"):
             self.rate.sleep()
 
@@ -68,18 +74,20 @@ class PathLogger:
             self.active = rospy.get_param("path_logger_active")
             self.rate.sleep()
 
-        rospy.loginfo(self.name + ": Started logging")
         if self.waypoint_global_next_published is None or self.waypoint_global_previous_published is None:
             self.update_waypoints = False
-            self.waypoint_global_next_pos = np.array([self.marker_array_goal_position.pose.position.x,
-                                                      self.marker_array_goal_position.pose.position.y,
-                                                      self.marker_array_goal_position.pose.position.z])
+            self.waypoint_global_next_pos = np.array([self.marker_array_goal_position.markers[0].pose.position.x,
+                                                      self.marker_array_goal_position.markers[0].pose.position.y,
+                                                      self.marker_array_goal_position.markers[0].pose.position.z])
+
             self.waypoint_global_previous_pos = np.array([self.uav_pose_stamped.pose.position.x,
                                                           self.uav_pose_stamped.pose.position.y,
                                                           self.uav_pose_stamped.pose.position.z])
 
         jj = 0
-        while self.active and not rospy.is_shutdown():
+
+        rospy.loginfo(self.name + ": Started logging")
+        while self.active:
             time = float(self.uav_pose_stamped.header.stamp.secs) + \
                    float(self.uav_pose_stamped.header.stamp.nsecs) / 10**9
 
@@ -106,11 +114,19 @@ class PathLogger:
                             self.uav_velocity_stamped.twist.angular.y,
                             self.uav_velocity_stamped.twist.angular.z]
 
+            if all(np.isclose(log_data[jj, 1:4], log_data[jj, 4:7], atol=0.5)):
+                break
+
             jj += 1
             self.active = rospy.get_param("path_logger_active")
+
+            if rospy.is_shutdown():
+                self.file_path = self.file_path + "_ABORTED"
+                break
+
             self.rate.sleep()
 
-        log_data = log_data[:jj]
+        log_data = log_data[:jj+1]
         rospy.loginfo(self.name + ": Ended logging")
 
         data = {"meta_data": meta_data, "position_data": log_data}
@@ -118,6 +134,7 @@ class PathLogger:
         pickle.dump(data, file_pickle)
         file_pickle.close()
         rospy.loginfo(self.name + ": Data saved")
+
         return
 
     def update_waypoint_pos(self):

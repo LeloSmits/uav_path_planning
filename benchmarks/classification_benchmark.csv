@@ -1,3 +1,5 @@
 Hinderniskategorie,Hindernisart,Gefahrenindex
-Wand,box,20.0
+Wand,wall,10.0
+Energie,powerline,30.0
+Natur,tree,20.0
 

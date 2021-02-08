@@ -1,0 +1,6 @@
+#!/usr/bin/env python2
+
+from py_uav_path_planning import setup_px4_path_logger
+
+if __name__ == '__main__':
+    setup_px4_path_logger()
