@@ -20,7 +20,7 @@ def evaluate(pickle_file, pickle_file_2=None, names=("Log 1", "Log 2"), figtitle
 
     # Setup the figure
     figsize = (8.27, 11.69)
-    fig0, ax0 = plt.subplots(2, figsize=figsize)
+    fig0, ax0 = plt.subplots(3, figsize=figsize)
     if figtitle is not None:
         fig0.suptitle(figtitle, fontsize=20)
 
@@ -35,6 +35,7 @@ def evaluate(pickle_file, pickle_file_2=None, names=("Log 1", "Log 2"), figtitle
     # Get the position of the UAV for every time step and the corresponding global waypoints at that time step
     distance_from_path = np.zeros(pos_data.shape[0])
     uav_pos = np.array(pos_data[:, 1:4])
+    uav_vel = np.array(pos_data[:, 10:13])
     wp_next = np.array(pos_data[:, 4:7])
     wp_prev = np.array(pos_data[:, 7:10])
 
@@ -49,15 +50,22 @@ def evaluate(pickle_file, pickle_file_2=None, names=("Log 1", "Log 2"), figtitle
         integral_distance_from_path[row_i] = integral_distance_from_path[row_i - 1] \
                                              + distance_from_path[row_i] * (pos_data[row_i, 0] - pos_data[row_i - 1, 0])
 
+    acceleration = np.zeros(uav_vel.shape)
+    for row_i in range(1, len(uav_vel)):
+        acceleration[row_i] = (uav_vel[row_i] - uav_vel[row_i-1]) / (pos_data[row_i, 0] - pos_data[row_i-1, 0])
     # Plot the current and cumulated distance from the path
     # The lns0 and lns00 variables are needed to show the legend in a twin-axis-plot
-    lns0 = ax0[0].plot(pos_data[:, 0] - pos_data[0, 0], distance_from_path, label=names[0] + ": Momentane Abweichung vom Pfad")
+    lns0 = ax0[0].plot(pos_data[:, 0] - pos_data[0, 0], distance_from_path,
+                       label=names[0] + ": Momentane Abweichung vom Pfad")
     ax00 = ax0[0].twinx()
     lns00 = ax00.plot(pos_data[:, 0] - pos_data[0, 0], integral_distance_from_path,
                       label=names[0] + ": Kumulierte Abweichung vom Pfad", linestyle="--")
     lns = lns0 + lns00
-    ax0[1].plot(pos_data[:, 0] - pos_data[0, 0], np.sqrt(pos_data[:, 11]**2 + pos_data[:, 12]**2), label=names[0] + ': XY-Geschwindigkeit')
+    ax0[1].plot(pos_data[:, 0] - pos_data[0, 0], np.sqrt(pos_data[:, 11] ** 2 + pos_data[:, 12] ** 2),
+                label=names[0] + ': XY-Geschwindigkeit')
     ax0[1].plot(pos_data[:, 0] - pos_data[0, 0], pos_data[:, 13], label=names[0] + ': Z-Geschwindigkeit')
+    ax0[2].plot(pos_data[:, 0] - pos_data[0, 0], )
+
 
     # This assignment is needed to correctly limit the x-axis later on. If pickle_file_2 is not None, this value is later overwritten
     time_total_2 = time_total_1
@@ -90,15 +98,15 @@ def evaluate(pickle_file, pickle_file_2=None, names=("Log 1", "Log 2"), figtitle
         for row_i in range(1, len(pos_data)):
             integral_distance_from_path[row_i] = integral_distance_from_path[row_i - 1] \
                                                  + distance_from_path[row_i] * (
-                                                             pos_data[row_i, 0] - pos_data[row_i - 1, 0])
+                                                         pos_data[row_i, 0] - pos_data[row_i - 1, 0])
 
         # Plot the current and cumulated distance from the path
         # The lns0 and lns00 variables are needed to show the legend in a twin-axis-plot
         lns000 = ax0[0].plot(pos_data[:, 0] - pos_data[0, 0], distance_from_path,
-                           label=names[1] + ": Momentane Abweichung vom Pfad")
+                             label=names[1] + ": Momentane Abweichung vom Pfad")
         ax0[0].set_ylabel("Momentane Abweichung in m")
         lns0000 = ax00.plot(pos_data[:, 0] - pos_data[0, 0], integral_distance_from_path,
-                          label=names[1] + ": Kumulierte Abweichung vom Pfad", linestyle="--")
+                            label=names[1] + ": Kumulierte Abweichung vom Pfad", linestyle="--")
         ax00.set_ylabel("Kumulierte Abweichung in m")
         ax0[1].plot(pos_data[:, 0] - pos_data[0, 0], np.sqrt(pos_data[:, 11] ** 2 + pos_data[:, 12] ** 2),
                     label=names[1] + ': XY-Geschwindigkeit')
@@ -129,6 +137,9 @@ def evaluate(pickle_file, pickle_file_2=None, names=("Log 1", "Log 2"), figtitle
 
 
 if __name__ == '__main__':
-    evaluate("/home/daniel/path_planning_logs/z=0,5 atol=0,5/3d_1.p", "/home/daniel/path_planning_logs/baumann_3d_1.p", ("APF", "VFH"), "Scenario 1")
-    evaluate("/home/daniel/path_planning_logs/z=0,5/3d_2,kc=15.p", "/home/daniel/path_planning_logs/baumann_3d_2.p", ("APF", "VFH"), "Scenario 2")
-    evaluate("/home/daniel/path_planning_logs/z=0,5/3d_3,kc=15.p", "/home/daniel/path_planning_logs/baumann_3d_3.p", ("APF", "VFH"), "Scenario 3")
+    evaluate("/home/daniel/path_planning_logs/z=0,5 atol=0,5/3d_1.p", "/home/daniel/path_planning_logs/baumann_3d_1.p",
+             ("APF", "VFH"), "Scenario 1")
+    # evaluate("/home/daniel/path_planning_logs/z=0,5/3d_2,kc=15.p", "/home/daniel/path_planning_logs/baumann_3d_2.p",
+    #          ("APF", "VFH"), "Scenario 2")
+    # evaluate("/home/daniel/path_planning_logs/z=0,5/3d_3,kc=15.p", "/home/daniel/path_planning_logs/baumann_3d_3.p",
+    #          ("APF", "VFH"), "Scenario 3")

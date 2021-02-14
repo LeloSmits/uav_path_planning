@@ -13,9 +13,6 @@ from visualization_msgs.msg import MarkerArray
 from mavros_msgs.msg import PositionTarget, Waypoint, WaypointList
 
 
-Baumann = False
-
-
 class PathLogger:
     def __init__(self):
         self.name = 'path_logger'
