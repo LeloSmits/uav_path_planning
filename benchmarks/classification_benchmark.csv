@@ -1,4 +1,5 @@
-Hinderniskategorie, Hindernisart, Gefahrenindex
-Natur, Baum, 5
-Gebäude, Haus, 10
-Energieversorgung, Strommast, 20
+Hinderniskategorie,Hindernisart,Gefahrenindex
+Wand,wall,10.0
+Energie,powerline,30.0
+Natur,tree,20.0
+

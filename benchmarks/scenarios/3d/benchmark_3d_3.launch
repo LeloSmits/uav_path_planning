@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<launch>
+    <arg name="world_file_name"    default="3d_3.world" />
+    <arg name="scenario_path" default="$(find uav_path_planning)/benchmarks/scenarios/3d/" />
+    <arg name="world_path" default="$(find uav_path_planning)/benchmarks/scenarios/3d/$(arg world_file_name)" />
+
+    <group ns="path_planning">
+        <!-- File Location params -->
+        <param name="path_to_gazebo_xml" value="$(arg world_path)" />
+        <param name="path_to_classifier_csv" value="$(arg scenario_path)/classification_3d.csv" />
+        <param name="path_to_waypoints_pickle" value="$(arg scenario_path)/waypoints_3D.p" />
+
+        <!-- Global Path params -->
+        <param name="takeoff_altitude" value="1." />
+        <param name="tol_wp_reached" value=".5" />
+        <param name="tol_wp_takeoff" value=".1" />
+
+        <!-- Local Planner params -->
+        <param name="apf_3D" value="true" />
+        <param name="bug_mode_allowed" value="true" />
+        <param name="apf_ctrl_type" value="velocity" />
+        <param name="speed_max_xy" value="3.0" />
+        <param name="speed_max_z" value="2." />
+        <param name="speed_multiplier" value="3." />
+        <param name="step_size_max" value="1.0" />
+        <param name="apf_max_iter" value="100" />
+        <param name="threshold_wp_position_control" value="1." />
+
+        <!-- Local Minima Bug params -->
+        <param name="bug_step_size" value="1.0" />
+        <param name="bug_deviation_from_path_max" value="20.0" />
+        <param name="bug_gd_step_size" value="1.0" />
+        <param name="bug_gd_max_iter" value="100" />
+        <param name="bug_correction_factor" value="1." />
+        <param name="uav_is_stalled_time_limit" value="3." />
+
+        <!-- Potential Field params -->
+        <param name="apf_ka" value="1" />
+        <param name="apf_kb" value="0.1" />
+        <param name="apf_kc" value="15." />
+        <param name="apf_kd" value=".01" />
+        <param name="z_min" value="0." />
+
+        <node pkg="uav_path_planning" type="path_logger_node" name="path_logger_node" launch-prefix="xterm -e"/>
+        <node pkg="uav_path_planning" type="obstacle_sensor_node" name="obstacle_sensor_node" launch-prefix="xterm -e"/>
+        <node pkg="uav_path_planning" type="obstacle_map_node" name="obstacle_map_node" launch-prefix="xterm -e"/>
+        <node pkg="uav_path_planning" type="local_path_planner_node" name="local_path_planner_node" launch-prefix="xterm -e"/>
+        <node pkg="uav_path_planning" type="global_path_node" name="global_path_node" launch-prefix="xterm -e"/>
+        <node pkg="uav_path_planning" type="calc_apf.py" name="calc_apf" launch-prefix="xterm -e"/>
+    </group>
+
+    <!-- MAVROS, PX4 SITL and Gazebo -->
+    <include file="$(find px4)/launch/mavros_posix_sitl.launch">
+        <arg name="world" value="$(arg world_path)"/>
+    </include>
+
+</launch>

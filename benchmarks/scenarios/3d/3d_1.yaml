@@ -1,0 +1,18 @@
+ - type: "cube"
+   name: "box1"
+   frame_id: "local_origin"
+   mesh_resource: ""
+   position: [6.0, 0.0, 0.5]
+   orientation: [0.0, 0.0, 0.0, 0.0]
+   scale: [1.0, 7.0, 1.0]
+
+ - type: "cylinder"
+   name: "cylinder1"
+   frame_id: "local_origin"
+   mesh_resource: ""
+   position: [12.0, -2.0, 3.0]
+   orientation: [0.0, 0.0, 0.0, 0.0]
+   scale: [1.0, 1.0, 6.0]
+
+
+
