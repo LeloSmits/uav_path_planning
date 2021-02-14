@@ -39,8 +39,8 @@ class GlobalPath(object):
         # self.tol_wp_global = rospy.get_param('tol_wp_global', .1)  # Same as above but for gloabl waypoint
 
         # --- RATES --- #
-        self._rate_publish = rospy.Rate(20)
-        self._rate_reached_waypoint = rospy.Rate(20)
+        self._rate_publish = rospy.Rate(50)
+        self._rate_reached_waypoint = rospy.Rate(10)
 
         # --- THREADS --- #
         # Thread for global waypoint publishing

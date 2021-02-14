@@ -135,7 +135,7 @@ class LocalPathPlanner(object):
                 setpoint.header.stamp = rospy.Time.now()
                 setpoint.position.x = uav_pos[0]
                 setpoint.position.y = uav_pos[1]
-                setpoint.position.z = uav_pos[2]  # ToDo: make 3D - CHECK
+                setpoint.position.z = uav_pos[2]
                 rospy.loginfo(self.name + ": Scanning 360 environment")
                 for angle_i in np.linspace(uav_yaw, uav_yaw + 2 * np.pi, 30):
                     setpoint.yaw = angle_i
@@ -196,7 +196,7 @@ class LocalPathPlanner(object):
         setpoint.header.stamp = rospy.Time.now()
         setpoint.position.x = uav_pos[0]
         setpoint.position.y = uav_pos[1]
-        setpoint.position.z = uav_pos[2]  # ToDo: make 3D - CHECK
+        setpoint.position.z = uav_pos[2]
 
         step_size = self.step_size_max
 
@@ -209,8 +209,8 @@ class LocalPathPlanner(object):
         direction = -gradient[0]  # Subtraction because we want to descent / move to smaller potential
         # rospy.loginfo("direction: " + str(direction))
         if not self.allow_3D:
-            direction[2] = 0  # ToDo: make 3D - CHECK
-        direction_length = np.linalg.norm(direction)  # ToDo: adapt for 3D - CHECK?
+            direction[2] = 0
+        direction_length = np.linalg.norm(direction)
 
         for i in range(self.max_iter_per_wp):
             if self.control_type == 'velocity':
