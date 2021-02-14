@@ -3,7 +3,8 @@ import pickle
 import numpy as np
 import matplotlib.pyplot as plt
 
-twoD = True
+twoD = False
+
 
 def evaluate(pickle_file, pickle_file_2=None, names=("Log 1", "Log 2"), figtitle=None):
     """Plots the log files created by the path_logger_node.
@@ -21,7 +22,7 @@ def evaluate(pickle_file, pickle_file_2=None, names=("Log 1", "Log 2"), figtitle
         return vector_proj
 
     # Setup the figure
-    figsize = (8.27, 11.69)
+    figsize = (7, 9.89)
     fig0, ax0 = plt.subplots(3, figsize=figsize)
     if figtitle is not None:
         fig0.suptitle(figtitle, fontsize=20)
@@ -60,7 +61,7 @@ def evaluate(pickle_file, pickle_file_2=None, names=("Log 1", "Log 2"), figtitle
     if twoD:
         for row_i in range(1, len(uav_vel)):
             acceleration[row_i] = np.linalg.norm(
-                (uav_vel[row_i,:2] - uav_vel[row_i - 1,:2]) / (pos_data[row_i, 0] - pos_data[row_i - 1, 0]))
+                (uav_vel[row_i, :2] - uav_vel[row_i - 1, :2]) / (pos_data[row_i, 0] - pos_data[row_i - 1, 0]))
     else:
         for row_i in range(1, len(uav_vel)):
             acceleration[row_i] = np.linalg.norm(
@@ -172,7 +173,7 @@ def evaluate(pickle_file, pickle_file_2=None, names=("Log 1", "Log 2"), figtitle
         ax_i.set_xlabel("Zeit in s")
     ax0[0].set_ylim(0)
     ax00.set_ylim(0)
-    ax00.grid(linestyle="--")
+    # ax00.grid(linestyle="--")
     ax0[0].set_title("Abweichung vom Pfad")
     ax0[0].set_ylabel("Momentane Abweichung in m")
     ax00.set_ylabel("Kumulierte Abweichung in m*s")
@@ -196,13 +197,14 @@ def evaluate(pickle_file, pickle_file_2=None, names=("Log 1", "Log 2"), figtitle
         plt.tight_layout(rect=[0, 0, 1, 0.95])
     else:
         plt.tight_layout()
-    plt.show()
+
+    fig0.savefig("plots/" + figtitle + ".svg")
 
 
 if __name__ == '__main__':
     evaluate("/home/daniel/path_planning_logs/z=0,5 atol=0,5/3d_1.p", "/home/daniel/path_planning_logs/baumann_3d_1.p",
              ("APF", "VFH"), "3D - Scenario 1")
-    # evaluate("/home/daniel/path_planning_logs/z=0,5/3d_2,kc=15.p", "/home/daniel/path_planning_logs/baumann_3d_2.p",
-    #          ("APF", "VFH"), "Scenario 2")
-    # evaluate("/home/daniel/path_planning_logs/z=0,5/3d_3,kc=15.p", "/home/daniel/path_planning_logs/baumann_3d_3.p",
-    #          ("APF", "VFH"), "Scenario 3")
+    evaluate("/home/daniel/path_planning_logs/z=0,5/3d_2,kc=15.p", "/home/daniel/path_planning_logs/baumann_3d_2.p",
+             ("APF", "VFH"), "3D - Scenario 2")
+    evaluate("/home/daniel/path_planning_logs/z=0,5/3d_3,kc=15.p", "/home/daniel/path_planning_logs/baumann_3d_3.p",
+             ("APF", "VFH"), "3D - Scenario 3")
