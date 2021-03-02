@@ -87,12 +87,12 @@ def evaluate(pickle_file, pickle_file_2=None, names=("Log 1", "Log 2"), figtitle
         ax0[1].plot(pos_data[:, 0] - pos_data[0, 0], pos_data[:, 12], label=names[0] + ': Z-Geschwindigkeit',
                     linestyle="--", color="#1f77b4")
 
-    lns1 = ax0[2].plot(pos_data[:, 0] - pos_data[0, 0], acceleration, label=names[0] + ': Momentane Beschleunigung',
+    lns01 = ax0[2].plot(pos_data[:, 0] - pos_data[0, 0], acceleration, label=names[0] + ': Momentane Beschleunigung',
                        color="#1f77b4")
     ax02 = ax0[2].twinx()
     lns10 = ax02.plot(pos_data[:, 0] - pos_data[0, 0], integral_acceleration,
                       label=names[0] + ': Kumulierte Beschleunigung', color="#1f77b4", linestyle="--")
-    lns1 = lns1 + lns10
+    lns1 = lns01 + lns10
 
     # This assignment is needed to correctly limit the x-axis later on. If pickle_file_2 is not None, this value is
     # later overwritten
@@ -163,8 +163,8 @@ def evaluate(pickle_file, pickle_file_2=None, names=("Log 1", "Log 2"), figtitle
         lns100 = ax0[2].plot(pos_data[:, 0] - pos_data[0, 0], acceleration,
                              label=names[1] + ': Momentane Beschleunigung', color="#ff7f0e")
         lns1000 = ax02.plot(pos_data[:, 0] - pos_data[0, 0], integral_acceleration,
-                            label=names[0] + ': Kumulierte Beschleunigung', color="#ff7f0e", linestyle="--")
-        lns1 = lns1 + lns10 + lns100 + lns1000
+                            label=names[1] + ': Kumulierte Beschleunigung', color="#ff7f0e", linestyle="--")
+        lns1 = lns01 + lns10 + lns100 + lns1000
 
     # Set the
     for ax_i in ax0:
@@ -173,7 +173,7 @@ def evaluate(pickle_file, pickle_file_2=None, names=("Log 1", "Log 2"), figtitle
         ax_i.set_xlabel("Zeit in s")
     ax0[0].set_ylim(0)
     ax00.set_ylim(0)
-    # ax00.grid(linestyle="--")
+    ax00.grid(linestyle="--")
     ax0[0].set_title("Abweichung vom Pfad")
     ax0[0].set_ylabel("Momentane Abweichung in m")
     ax00.set_ylabel("Kumulierte Abweichung in m*s")
@@ -189,7 +189,7 @@ def evaluate(pickle_file, pickle_file_2=None, names=("Log 1", "Log 2"), figtitle
     ax0[2].set_title("Lineare Beschleunigung")
     ax0[2].set_ylim(0)
     ax0[2].set_ylabel("Beschleunigung in m/s2")
-    ax02.set_ylabel("Kumulierte Beschleunigung in m2/s2")
+    ax02.set_ylabel("Kumulierte Beschleunigung in m/s")
     labels = [l.get_label() for l in lns1]
     ax0[2].legend(lns1, labels, loc="upper center")
 
@@ -202,7 +202,7 @@ def evaluate(pickle_file, pickle_file_2=None, names=("Log 1", "Log 2"), figtitle
 
 
 if __name__ == '__main__':
-    evaluate("/home/daniel/path_planning_logs/z=0,5 atol=0,5/3d_1.p", "/home/daniel/path_planning_logs/baumann_3d_1.p",
+    evaluate("/home/daniel/path_planning_logs/z=0,5/3d_1,kc=15.p", "/home/daniel/path_planning_logs/baumann_3d_1.p",
              ("APF", "VFH"), "3D - Scenario 1")
     evaluate("/home/daniel/path_planning_logs/z=0,5/3d_2,kc=15.p", "/home/daniel/path_planning_logs/baumann_3d_2.p",
              ("APF", "VFH"), "3D - Scenario 2")

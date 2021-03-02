@@ -2,16 +2,14 @@
 ## Table of contents
 
 - [Quick start](#quick-start)
-- [Status](#status)
 - [What's included](#whats-included)
-- [Bugs and feature requests](#bugs-and-feature-requests)
-- [Contributing](#contributing)
 - [Creators](#creators)
-- [Thanks](#thanks)
-- [Copyright and license](#copyright-and-license)
 
 
 ## Quick start
+Install PX4, Gazebo and ROS with this tutorial: https://docs.px4.io/master/en/simulation/ros_interface.html
+
+Move entire folder into ~/catkin_ws/src. Run "catkin build" from ~/catkin_ws.
 
 There are already a few example launch files in the folder ./launch. You can launch them with 
 ```text
@@ -19,20 +17,17 @@ roslaunch uav_path_planning path_planner_01.launch
 ```
 or some other launch file of your choice.
 
-## Status
-
-Here goes all the budgets
-
 ## What's included
 
-Some text
+Refer to the ADP-Documentation for detailed information on the ROS-communication-network and how the nodes work with 
+each other.
 
 ```text
 uav_path_planning/
-└── benchmarks/
+├── benchmarks/
 │   ├── scenarios/
-│   │   ├── 2d
-│   │   └── 3d
+│   │   ├── 2d  # Contains the 2D-worlds and launch files used for evaluation
+│   │   └── 3d  # Contains the 3D-worlds and launch files used for evaluation
 │   └── classification_benchmark.csv        # Contains the danger index for different obstacle types; used by the benchmark launch files
 ├── launch/
 │   ├── benchmark_launch/
@@ -49,53 +44,32 @@ uav_path_planning/
 │   ├── obstacle_sensor_node
 │   ├── path_logger_node
 │   └── setup_path_logger_for_px4_node
-├── scripts/
-│   └── mavros_path_planning_test.py    # Just used for some testing
 ├── src/                                # Contains the python source code
 │   └── py_uav_path_planning/           # The python package
-│       ├── fextras/
+│       ├── extras/
 │       │   ├── evaluate_log_file.py                    # Plots the logs file
 │       │   ├── path_logger.py                          # Logs the UAV position and velocity and the global waypoints for every time step 
 │       │   └── setup_path_logger_for_px4_avoidance.py  # Kills the offb_node and starts the path_logger
-│       ├── fobstacle_map/
+│       ├── obstacle_map/
 │       │   └── obstacle_map.py                         # Starts the obstacle map
-│       ├── fobstacle_sensor
-│       │   └── obstacle_sensor.py                      # Starts the obstacle sensor
-│       ├── fpath_planning/
-│       └── file4
+│       ├── obstacle_sensor
+│       │   ├── obstacle_sensor.py   # Starts the obstacle sensor
+│       │   └── helper
+│       │       └── read_gazebo_xml.py   # Reads all obstacles in a gazebo world file
+│       └── path_planning/
+│           ├── calc_apf.py     # Service node for the potential field and gradient field
+│           ├── global_path.py  # Node that forwards waypoints from local planner and publishes global waypoints from a file
+│           └── local_path_planning.py  # Local planner that uses calc_apf for finding movement direction
 └── srv/
-    ├── folder3/
-    │   ├── file1
-    │   └── file2
-    └── folder4/
-        ├── file3
-        └── file4
+    └── potential_field_msg.srv     # Service type used by calc_apf and local_path_planning
 ```
-
-## Bugs and feature requests
-
-Have a bug or a feature request? Please first read the [issue guidelines](https://reponame/blob/master/CONTRIBUTING.md) and search for existing and closed issues. If your problem or idea is not addressed yet, [please open a new issue](https://reponame/issues/new).
-
-## Contributing
-
-Please read through our [contributing guidelines](https://reponame/blob/master/CONTRIBUTING.md). Included are directions for opening issues, coding standards, and notes on development.
-
-Moreover, all HTML and CSS should conform to the [Code Guide](https://github.com/mdo/code-guide), maintained by [Main author](https://github.com/usernamemainauthor).
-
-Editor preferences are available in the [editor config](https://reponame/blob/master/.editorconfig) for easy use in common text editors. Read more and download plugins at <https://editorconfig.org/>.
 
 ## Creators
 
-**Creator 1**
+**Leonard Smits**
 
-- <https://github.com/usernamecreator1>
+https://github.com/LeloSmits
 
-## Thanks
+**Daniel Piendl**
 
-Some Text
-
-## Copyright and license
-
-Code and documentation copyright 2011-2018 the authors. Code released under the [MIT License](https://reponame/blob/master/LICENSE).
-
-Enjoy :metal:
+https://github.com/dpiendl

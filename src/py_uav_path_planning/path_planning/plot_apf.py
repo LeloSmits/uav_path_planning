@@ -6,10 +6,10 @@ import pickle
 
 # ptf = "/home/leonard/catkin_ws/src/path_planning_private/benchmarks/scenarios/2d/2d_scenario_our_drone.xml"
 # ptf = "/home/leonard/catkin_ws/src/path_planning_private/benchmarks/scenarios/2d/2d_scenario.xml"
-ptf = "/home/leonard/catkin_ws/src/path_planning_private/benchmarks/scenarios/2d/2d_scenario_final.xml"
+ptf = "/home/daniel/catkin_ws/src/path_planning_private/benchmarks/scenarios/2d/2d_scenario_final_3.xml"
 
-pickle_file = "/home/leonard/catkin_ws/src/path_planning_private/benchmarks/scenarios/2d/path_log_01_02_2021_10_29_57.p"
-
+pickle_file = "/home/daniel/path_planning_logs/Leo/path_log_scenario_3_ours.p"
+pickle_file_px4 = "/home/daniel/path_planning_logs/Leo/path_log_px4_scenario_3.p"
 # open pickle file
 file_open = open(pickle_file, "rb")
 pickle_data = pickle.load(file_open)
@@ -25,9 +25,19 @@ uav_pos = np.array(pos_data[:, 1:4])
 wp_next = np.array(pos_data[:, 4:7])
 wp_prev = np.array(pos_data[:, 7:10])
 
+# open PX4 file
+file_open = open(pickle_file_px4, "rb")
+pickle_data = pickle.load(file_open)
+pos_data = pickle_data['position_data']
+
+# index 1 to index 3 for uav position important
+uav_pos_px4 = np.array(pos_data[:, 1:4])
+
+
 x_factor = y_factor = z_factor = 1
 rho0 = 20
-classification = 10
+classification = 30
+
 
 # Read xml file for obstacles
 def read_gazebo_xml(filename, obstacle_prefix='obs_'):
@@ -57,6 +67,7 @@ def read_gazebo_xml(filename, obstacle_prefix='obs_'):
             allObstacles.append(newObstacle)
 
     return allObstacles
+
 
 class PlotObstacle:
     def __init__(self, name):
@@ -121,27 +132,21 @@ class PlotObstacle:
             return gradient
 
 
-
 # Step 1: Take one obstacle and plot the potential
 # Step 2: Take all obstacles and iterate over them to plot their potential
 
-# parameters of the obstacle course
-x_factor = y_factor = z_factor = 1
-rho0 = 20
 goal_coordinate = [18, 0, 0.5]
 
 # parameters of attractiveness of trench
-kb = 0.4
+kb = 0.01
 
 # parameters of attractiveness of goal
-ka = 0.2
+ka = 1
 
 obs_list = read_gazebo_xml(ptf)
 
 
 # This is not done in combination with gazebo. Values are chosen randomly
-
-
 
 def obstacle_potential_function(obs123_pose, obs123_a, obs123_b, obs123_c, arr):
     waypoint = arr
@@ -182,8 +187,8 @@ def attractive_goal_potential(arr, goal_coordinate):
 
 # goal_pos1 = [25, 5, 0]
 pts0 = 500
-xlim = [-1, 20]
-ylim = [-5, 5]
+xlim = [-1, 25]
+ylim = [-10, 10]
 x, y = np.linspace(xlim[0], xlim[1], pts0), np.linspace(ylim[0], ylim[1], pts0)
 X, Y = np.meshgrid(x, y)
 pot0 = np.zeros((pts0, pts0))
@@ -235,47 +240,26 @@ for row in range(pts0):
 
 
 
-# # Create set of waypoints
-# vector_size = 100
-# sow = np.random.rand(vector_size, 3)
-# sow = sow*100
-#
-# # Define number of obstacles
-# noo = 0
-# # Defining obstacles
-# # What do i need? I need position, a, b, c
-# carrier = []
-# while noo < 1:
-#     obs123_pose = [random.randint(1, 5), random.randint(3, 4), random.randint(0, 1)]
-#     obs123_a = obs123_b = obs123_c = 1
-#
-#     potential = obstacle_potential_function(obs123_pose, obs123_a, obs123_b, obs123_c, waypoint=sow)
-#     carrier.append(potential)
-#     noo = noo + 1
-
-lim_pot = 25
+lim_pot = 50
 pot0[np.where(pot0 > lim_pot)] = lim_pot
 
-# # plot vector field
-# fig0, ax0 = plt.subplots(1, figsize=(8, 5), dpi=320)
-# ax0.quiver(X, Y, vec[:, :, 0], vec[:, :, 1], cmap='gist_earth')
-# plt.plot(fig0)
-# # fig0.savefig('Trench gradient field.pdf')
 
 # ------- PLOT
 fig0, ax0 = plt.subplots(1, figsize=(7, 3.75), dpi=320)
-fig0.add_axes
-cs = ax0.contour(X, Y, pot0, cmap='gist_earth', levels=10)
-# ax0.scatter(uav_pos[:, 0], uav_pos[:, 1])
+# fig0.add_axes
+cs = ax0.contour(X, Y, pot0, cmap='gist_earth', levels=20)
+plot_apf, = ax0.plot(uav_pos[:, 0], uav_pos[:, 1], label="APF", color="green")
+plot_vfh, = ax0.plot(uav_pos_px4[:,0], uav_pos_px4[:,1], label="VFH", color="orange")
 ax0.clabel(cs, inline=1, fontsize=10)
-marker_one, = plt.plot(18, 0, marker='x', color='r', mew=5, ms=10)
-marker_two, = plt.plot(0, 0, marker='x', color='b', mew=5, ms=10)
+marker_one = ax0.scatter(18, 0, marker='x', color='r', linewidth=5, s=100, zorder=10)
+marker_two = ax0.scatter(0, 0, marker='x', color='b', linewidth=5, s=100, zorder=10)
 plt.ylabel('y')
 plt.xlabel('x')
-plt.legend(handles=[marker_one, marker_two], labels=['Goal', 'Start'], title='Legend', loc='best', bbox_to_anchor=(0.5,-0.1))
-plt.title('Overall potential')
-# plt.show()
-#plt.savefig('Overall potential.svg', bbox_inches='tight')
+plt.legend(handles=[marker_one, marker_two, plot_apf, plot_vfh], labels=['Goal', 'Start', 'APF-Path', '3DVFH*-Path'],
+           title='Legend', loc='best', bbox_to_anchor=(1.3, 1))
+plt.title('2D - Scenario 3 - Flown Path')
+#plt.show()
+plt.savefig('2D - Scenario 3 - Flown Path.svg', bbox_inches='tight')
 # fig0.savefig('Potentialfield_with_trench_goal_obstacles.pdf')
 # ax0.scatter(goal_pos0[0], goal_pos0[1], label="Start")
 # ax0.scatter(goal_pos1[0], goal_pos1[1], label="Goal")
