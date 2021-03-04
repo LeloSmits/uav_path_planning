@@ -20,7 +20,7 @@ or some other launch file of your choice.
 ## What's included
 
 Refer to the ADP-Documentation for detailed information on the ROS-communication-network and how the nodes work with 
-each other.
+each other. Alternatively, you can use the command rqt_graph to create a graph of the communication of nodes with each other.
 
 ```text
 uav_path_planning/
