@@ -183,14 +183,14 @@ if True:
     ax1.hlines((0, 6), 17.5, 18.5)
     ax1.hlines(5, 17.5, 18.5, linestyle="dotted")
 
-    plot_apf, = ax0.plot(uav_pos[:, 0], uav_pos[:, 1], label="APF", color="green")
-    plot_vfh, = ax0.plot(uav_pos_px4[:, 0], uav_pos_px4[:, 1], label="VFH", color="orange")
-    ax1.plot(uav_pos[:, 0], uav_pos[:, 2], label="APF", color="green")
-    ax1.plot(uav_pos_px4[:, 0], uav_pos_px4[:, 2], label="VFH", color="orange")
-    marker_one = ax0.scatter(24, 0, marker='x', color='r', linewidth=5, s=100, zorder=10)
-    marker_two = ax0.scatter(0, 0, marker='x', color='b', linewidth=5, s=100, zorder=10)
-    ax1.scatter(24, 1, marker='x', color='r', linewidth=5, s=100, zorder=10)
-    ax1.scatter(0, 1, marker='x', color='b', linewidth=5, s=100, zorder=10)
+    plot_apf, = ax0.plot(uav_pos[:, 0], uav_pos[:, 1], label="APF")
+    plot_vfh, = ax0.plot(uav_pos_px4[:, 0], uav_pos_px4[:, 1], label="VFH")
+    ax1.plot(uav_pos[:, 0], uav_pos[:, 2], label="APF") #, color="green")
+    ax1.plot(uav_pos_px4[:, 0], uav_pos_px4[:, 2], label="3DVFH*")  #, color="orange")
+    marker_one = ax0.scatter(24, 0, marker='x', linewidth=5, s=100, zorder=10, color='r')
+    marker_two = ax0.scatter(0, 0, marker='x', linewidth=5, s=100, zorder=10, color='b')
+    ax1.scatter(24, 1, marker='x', linewidth=5, s=100, zorder=10, color='r')  #
+    ax1.scatter(0, 1, marker='x', linewidth=5, s=100, zorder=10, color='b')  #
     # ax0.set_ylabel('y')
     # ax1.set_xlabel('x')
     # ax1.set_ylabel('z')
