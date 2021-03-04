@@ -12,6 +12,7 @@ This project uses an Artificial Potential Field Algorithm in order to find a pat
 
 ## Quick start
 Install PX4, Gazebo and ROS with this tutorial: https://docs.px4.io/master/en/simulation/ros_interface.html
+
 ROS Melodic is needed, other versions were not tested.
 
 Move the entire folder of the repo into ~/catkin_ws/src. Then run "catkin build" from ~/catkin_ws.
