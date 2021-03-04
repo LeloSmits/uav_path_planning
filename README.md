@@ -9,7 +9,7 @@
 ## Quick start
 Install PX4, Gazebo and ROS with this tutorial: https://docs.px4.io/master/en/simulation/ros_interface.html
 
-Move entire folder into ~/catkin_ws/src. Run "catkin build" from ~/catkin_ws.
+Move the entire folder of the repo into ~/catkin_ws/src. Then run "catkin build" from ~/catkin_ws.
 
 There are already a few example launch files in the folder ./launch. You can launch them with 
 ```text
@@ -26,15 +26,11 @@ each other.
 uav_path_planning/
 ├── benchmarks/
 │   ├── scenarios/
-│   │   ├── 2d  # Contains the 2D-worlds and launch files used for evaluation
-│   │   └── 3d  # Contains the 3D-worlds and launch files used for evaluation
-│   └── classification_benchmark.csv        # Contains the danger index for different obstacle types; used by the benchmark launch files
-├── launch/
-│   ├── benchmark_launch/
-│   │   └── local_planner_sitl_3cam.launch  # Start the PX4 3DVFH Planner, requires the PX4 avoidance package
-│   └── launch_files                        # Start various gazebo maps with our path planner
+│   │   ├── 2d                              # Contains the 2D-worlds and launch files used for evaluation
+│   │   └── 3d                              # Contains the 3D-worlds and launch files used for evaluation
+│   └── classification_benchmark.csv        # Contains the risik index for different obstacle types; used by the benchmark launch files
+├── launch/                     # Start various gazebo maps with our path planner  
 ├── msg/
-│   ├── MultiArray.msg          # Message type used by the potential_field node
 │   ├── obstacleListMsg.msg     # Message type used by the obstacle_sensor and the obstacle_map nodes
 │   └── obstacleMsg.msg         # Message type used by the obstacle_sensor and the obstacle_map nodes
 ├── nodes/                      # This folder contains python files that can be used as a shortcut to start the nodes from the python package in /src
