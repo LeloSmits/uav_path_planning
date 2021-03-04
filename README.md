@@ -7,7 +7,7 @@
 
 ## Project Overview
 
-This project uses an Artificial Potential Field Algorithm in order to find a path around obstacles and towards a goal. The algorithm utilizes ROS and the simulation environement Gazebo.
+This project uses an Artificial Potential Field Algorithm in order to find a path around obstacles and towards a goal. The algorithm utilizes ROS and the simulation environment Gazebo.
 
 ## Quick start
 Install PX4, Gazebo and ROS with this tutorial: https://docs.px4.io/master/en/simulation/ros_interface.html
